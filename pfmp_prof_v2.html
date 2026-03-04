@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1b3a63">
+    <title>📊 PFMP Stage — Dashboard Prof V2</title>
+    <style>
+        :root {
+            --bleu: #1b3a63;
+            --bleu-clair: #2d5a8c;
+            --orange: #ff6b35;
+            --vert: #27ae60;
+            --rouge: #e74c3c;
+            --jaune: #f39c12;
+            --gris: #6c757d;
+            --gris-clair: #f8f9fa;
+            --blanc: #ffffff;
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gris-clair);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* === LOGIN === */
+        .login-screen {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-clair) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-logo { font-size: 3rem; margin-bottom: 15px; }
+        .login-title { font-size: 1.5rem; font-weight: 700; color: var(--bleu); margin-bottom: 5px; }
+        .login-subtitle { font-size: 0.9rem; color: var(--gris); margin-bottom: 30px; }
+        
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+        }
+        
+        .login-input:focus { outline: none; border-color: var(--bleu); }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: var(--bleu);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+        
+        .login-btn:hover { background: var(--bleu-clair); }
+        
+        .demo-btn {
+            margin-top: 20px;
+            padding: 12px 24px;
+            background: none;
+            border: 2px dashed var(--orange);
+            color: var(--orange);
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        /* === APP === */
+        .app-screen { display: none; }
+        
+        /* === HEADER === */
+        .header {
+            background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
+            color: white;
+            padding: 20px;
+        }
+        
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .header h1 { font-size: 1.2rem; font-weight: 700; }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .header-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        /* === STATS CARDS === */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+        .stat-label { font-size: 0.7rem; opacity: 0.9; margin-top: 3px; }
+        
+        .stat-card.alert { background: var(--rouge); }
+        .stat-card.warning { background: var(--orange); }
+        .stat-card.success { background: var(--vert); }
+        
+        /* === ALERTES === */
+        .alerts-container {
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .alerts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            cursor: pointer;
+        }
+        
+        .alerts-title {
+            font-weight: 700;
+            color: var(--rouge);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .alerts-badge {
+            background: var(--rouge);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .alerts-toggle { font-size: 1.2rem; color: var(--gris); }
+        
+        .alerts-list {
+            padding: 0 20px 15px;
+            display: none;
+        }
+        
+        .alerts-list.show { display: block; }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #fff5f5;
+            border-left: 4px solid var(--rouge);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .alert-item.warning {
+            background: #fff8e6;
+            border-left-color: var(--orange);
+        }
+        
+        .alert-icon { font-size: 1.3rem; }
+        .alert-content { flex: 1; }
+        .alert-message { font-size: 0.9rem; font-weight: 600; }
+        .alert-detail { font-size: 0.75rem; color: var(--gris); margin-top: 2px; }
+        
+        /* === TABS === */
+        .tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 100px;
+            padding: 15px 10px;
+            border: none;
+            background: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gris);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        
+        .tab:hover { color: var(--bleu); }
+        .tab.active { color: var(--bleu); border-bottom-color: var(--orange); }
+        
+        /* === MAIN === */
+        .main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* === SECTIONS === */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* === CARDS === */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--bleu);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* === ÉLÈVES TABLE === */
+        .eleves-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .eleve-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 15px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 15px;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .eleve-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        
+        .eleve-status {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .eleve-status.ok { background: var(--vert); }
+        .eleve-status.warning { background: var(--orange); }
+        .eleve-status.danger { background: var(--rouge); }
+        .eleve-status.neutral { background: var(--gris); }
+        
+        .eleve-info h3 { font-size: 1rem; margin-bottom: 5px; }
+        .eleve-info p { font-size: 0.8rem; color: var(--gris); }
+        
+        .eleve-stats {
+            display: flex;
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .eleve-stat-item {
+            padding: 5px 10px;
+        }
+        
+        .eleve-stat-value { font-size: 1.1rem; font-weight: 700; color: var(--bleu); }
+        .eleve-stat-label { font-size: 0.65rem; color: var(--gris); }
+        
+        /* === PROGRESS BAR === */
+        .progress-bar {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        
+        .progress-fill.low { background: var(--rouge); }
+        .progress-fill.medium { background: var(--orange); }
+        .progress-fill.high { background: var(--vert); }
+        
+        /* === COMPÉTENCES GRID === */
+        .competences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .competence-card {
+            background: var(--gris-clair);
+            border-radius: var(--radius);
+            padding: 15px;
+        }
+        
+        .competence-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .competence-code {
+            font-weight: 700;
+            color: var(--bleu);
+        }
+        
+        .competence-badge {
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .competence-badge.good { background: #d4edda; color: #155724; }
+        .competence-badge.medium { background: #fff3cd; color: #856404; }
+        .competence-badge.low { background: #f8d7da; color: #721c24; }
+        
+        .competence-name {
+            font-size: 0.85rem;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .competence-bar {
+            height: 6px;
+            background: #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .competence-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+        
+        /* === IMPORT ZONE === */
+        .import-zone {
+            border: 3px dashed #ccc;
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--gris-clair);
+        }
+        
+        .import-zone:hover { border-color: var(--bleu); background: white; }
+        .import-zone.dragover { border-color: var(--vert); background: #e8f5e9; }
+        
+        .import-zone .icon { font-size: 3rem; margin-bottom: 15px; }
+        .import-zone .text { font-size: 1rem; color: var(--gris); }
+        .import-zone .hint { font-size: 0.8rem; color: #aaa; margin-top: 10px; }
+        
+        .import-results {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: var(--radius);
+            display: none;
+        }
+        
+        .import-results.show { display: block; }
+        
+        /* === BUTTONS === */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+        
+        .btn-primary { background: var(--bleu); color: white; }
+        .btn-success { background: var(--vert); color: white; }
+        .btn-outline { background: white; border: 2px solid var(--bleu); color: var(--bleu); }
+        .btn-full { width: 100%; }
+        
+        .btn:hover { opacity: 0.9; }
+        
+        /* === FORM === */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--bleu); }
+        
+        /* === MODAL === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 50px;
+            animation: slideDown 0.3s;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .modal-header h3 { font-size: 1.1rem; color: var(--bleu); }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gris);
+        }
+        
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 15px 20px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+        
+        /* === SYNTHÈSE PDF === */
+        .synthese-preview {
+            background: var(--gris-clair);
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .synthese-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bleu);
+        }
+        
+        .synthese-header h2 { color: var(--bleu); font-size: 1.2rem; }
+        .synthese-header p { color: var(--gris); font-size: 0.85rem; }
+        
+        .synthese-section {
+            margin-bottom: 15px;
+        }
+        
+        .synthese-section h4 {
+            font-size: 0.9rem;
+            color: var(--bleu);
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .synthese-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            font-size: 0.85rem;
+        }
+        
+        .synthese-row .label { color: var(--gris); }
+        .synthese-row .value { font-weight: 600; }
+        
+        .synthese-skills {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .synthese-skill {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .synthese-skill .level {
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+        }
+        
+        .synthese-skill .level.maitrise { background: #d4edda; color: #155724; }
+        .synthese-skill .level.fait { background: #d1ecf1; color: #0c5460; }
+        .synthese-skill .level.observe { background: #fff3cd; color: #856404; }
+        
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bleu);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--vert); }
+        .toast.error { background: var(--rouge); }
+        
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .eleve-card { grid-template-columns: auto 1fr; }
+            .eleve-stats { display: none; }
+            .competences-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ========================================
+     ÉCRAN DE CONNEXION
+     ======================================== -->
+<div class="login-screen" id="loginScreen">
+    <div class="login-box">
+        <div class="login-logo">📊</div>
+        <div class="login-title">Dashboard PFMP</div>
+        <div class="login-subtitle">Espace Enseignant — Suivi de stage</div>
+        
+        <input type="password" class="login-input" id="passwordInput" placeholder="Mot de passe">
+        
+        <button class="login-btn" onclick="login()">
+            🔐 Accéder au dashboard
+        </button>
+        
+        <button class="demo-btn" onclick="loginDemo()">
+            🎮 Mode Démo (5 élèves)
+        </button>
+    </div>
+</div>
+
+<!-- ========================================
+     APPLICATION
+     ======================================== -->
+<div class="app-screen" id="appScreen">
+    
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <h1>📊 Dashboard PFMP — CAP IFCA</h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="syncFromGoogle()" id="btnSync">🔄 Sync</button>
+                <button class="header-btn" onclick="openPearltrees()">🌳 Pearltrees</button>
+                <button class="header-btn" onclick="exportCCF()">📦 Export CCF</button>
+                <button class="header-btn" onclick="logout()">🚪</button>
+            </div>
+        </div>
+        
+        <div class="stats-row">
+            <div class="stat-card" id="statEleves">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Élèves</div>
+            </div>
+            <div class="stat-card" id="statActivites">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Activités</div>
+            </div>
+            <div class="stat-card" id="statTuteurs">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Éval. tuteurs</div>
+            </div>
+            <div class="stat-card" id="statAlertes">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Alertes</div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- ALERTES -->
+    <div class="alerts-container" id="alertsContainer">
+        <div class="alerts-header" onclick="toggleAlerts()">
+            <div class="alerts-title">
+                🚨 Alertes <span class="alerts-badge" id="alertsBadge">0</span>
+            </div>
+            <span class="alerts-toggle" id="alertsToggle">▼</span>
+        </div>
+        <div class="alerts-list" id="alertsList">
+            <!-- Généré par JS -->
+        </div>
+    </div>
+    
+    <!-- TABS -->
+    <div class="tabs">
+        <button class="tab active" data-tab="eleves" onclick="showTab('eleves')">👥 Élèves</button>
+        <button class="tab" data-tab="competences" onclick="showTab('competences')">🎯 Compétences</button>
+        <button class="tab" data-tab="import" onclick="showTab('import')">📥 Import</button>
+        <button class="tab" data-tab="codes" onclick="showTab('codes')">🔑 Codes</button>
+    </div>
+    
+    <!-- MAIN -->
+    <main class="main">
+        
+        <!-- SECTION ÉLÈVES -->
+        <section class="section active" id="section-eleves">
+            <div class="eleves-grid" id="elevesGrid">
+                <!-- Généré par JS -->
+            </div>
+        </section>
+        
+        <!-- SECTION COMPÉTENCES -->
+        <section class="section" id="section-competences">
+            <div class="card">
+                <div class="card-title">🎯 Couverture des compétences (classe entière)</div>
+                <p style="font-size:0.85rem; color:var(--gris); margin-bottom:20px;">
+                    Pourcentage d'élèves ayant pratiqué chaque compétence pendant leur stage.
+                </p>
+                
+                <div class="competences-grid" id="competencesGrid">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- SECTION IMPORT -->
+        <section class="section" id="section-import">
+            <div class="card">
+                <div class="card-title">📥 Importer depuis Pearltrees</div>
+                <p style="font-size:0.85rem; color:var(--gris); margin-bottom:20px;">
+                    1. Téléchargez les fichiers JSON depuis Pearltrees<br>
+                    2. Glissez-les ci-dessous
+                </p>
+                
+                <button class="btn btn-success btn-full" onclick="openPearltrees()" style="margin-bottom:20px;">
+                    🌳 Ouvrir Pearltrees
+                </button>
+                
+                <div class="import-zone" id="importZone"
+                     ondragover="handleDragOver(event)"
+                     ondragleave="handleDragLeave(event)"
+                     ondrop="handleDrop(event)"
+                     onclick="document.getElementById('importInput').click()">
+                    <div class="icon">📂</div>
+                    <div class="text">Glissez les fichiers JSON ici</div>
+                    <div class="hint">ou cliquez pour sélectionner</div>
+                    <input type="file" id="importInput" multiple accept=".json" style="display:none" onchange="handleFileSelect(event)">
+                </div>
+                
+                <div class="import-results" id="importResults">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">💾 Sauvegarde locale</div>
+                
+                <button class="btn btn-primary btn-full" onclick="sauvegarderBase()" style="margin-bottom:10px;">
+                    💾 Sauvegarder ma base
+                </button>
+                
+                <button class="btn btn-outline btn-full" onclick="document.getElementById('restoreInput').click()">
+                    📂 Restaurer une sauvegarde
+                </button>
+                <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restaurerBase(event)">
+            </div>
+        </section>
+        
+        <!-- SECTION CODES -->
+        <section class="section" id="section-codes">
+            <div class="card">
+                <div class="card-title">➕ Ajouter un élève</div>
+                
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" id="inputNom" placeholder="DUPONT">
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom</label>
+                        <input type="text" id="inputPrenom" placeholder="Martin">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Classe</label>
+                    <select id="inputClasse">
+                        <option value="CAP IFCA 1">CAP IFCA 1ère année</option>
+                        <option value="CAP IFCA 2">CAP IFCA 2ème année</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-success btn-full" onclick="ajouterEleve()">
+                    ➕ Générer le code élève
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📋 Liste des codes</div>
+                <div id="codesListe">
+                    <!-- Généré par JS -->
+                </div>
+                
+                <button class="btn btn-outline btn-full" onclick="imprimerCodes()" style="margin-top:15px;">
+                    🖨️ Imprimer tous les codes
+                </button>
+            </div>
+        </section>
+        
+    </main>
+</div>
+
+<!-- MODAL DÉTAIL ÉLÈVE -->
+<div class="modal" id="modalEleve">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalEleveTitle">Détail élève</h3>
+            <button class="modal-close" onclick="closeModal('modalEleve')">&times;</button>
+        </div>
+        <div class="modal-body" id="modalEleveBody">
+            <!-- Généré par JS -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalEleve')">Fermer</button>
+            <button class="btn btn-success" onclick="genererSynthese()">📄 Générer synthèse</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL SYNTHÈSE -->
+<div class="modal" id="modalSynthese">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📄 Synthèse PFMP</h3>
+            <button class="modal-close" onclick="closeModal('modalSynthese')">&times;</button>
+        </div>
+        <div class="modal-body" id="modalSyntheseBody">
+            <!-- Généré par JS -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalSynthese')">Fermer</button>
+            <button class="btn btn-primary" onclick="imprimerSynthese()">🖨️ Imprimer</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// CONFIGURATION
+// =============================================
+const GOOGLE_SCRIPT_URL = 'COLLER_URL_SCRIPT_ICI'; // ← Remplacer par ton URL
+const PROF_PASSWORD = 'PROF2026';
+const PEARLTREES_URL = 'https://www.pearltrees.com/private/id102655033?access=47af96018d7.61e6439.08abcff2f310b27abea01bd0388158ec';
+const SYNC_ENABLED = GOOGLE_SCRIPT_URL !== 'COLLER_URL_SCRIPT_ICI';
+
+// Référentiel compétences
+const COMPETENCES_REF = {
+    'C3.1': 'Organiser le poste de travail',
+    'C3.2': 'Identifier les risques',
+    'C3.3': 'Implanter, poser les équipements',
+    'C3.4': 'Façonner, raccorder les circuits',
+    'C3.6': 'Raccorder les équipements électriques',
+    'C3.7': 'Réaliser les mesures, contrôles',
+    'C3.9': 'Réaliser les opérations de mise en service'
+};
+
+// Mapping skills tuteur → compétences
+const SKILLS_TO_COMP = {
+    supports: 'C3.3',
+    unite_ext: 'C3.3',
+    unite_int: 'C3.3',
+    cintrage: 'C3.4',
+    dudgeon: 'C3.4',
+    brasage: 'C3.4',
+    cablage: 'C3.6',
+    tirage_vide: 'C3.9',
+    charge: 'C3.9',
+    etancheite: 'C3.9',
+    mesures: 'C3.7'
+};
+
+// =============================================
+// DONNÉES
+// =============================================
+let eleves = [];
+let currentEleveIndex = null;
+
+// =============================================
+// AUTHENTIFICATION
+// =============================================
+function login() {
+    const password = document.getElementById('passwordInput').value;
+    if (password === PROF_PASSWORD) {
+        loadData();
+        showApp();
+    } else {
+        alert('Mot de passe incorrect');
+    }
+}
+
+function loginDemo() {
+    // Données de démo
+    eleves = [
+        {
+            id: 1,
+            code: 'ELV-ABC123',
+            nom: 'DUPONT',
+            prenom: 'Martin',
+            classe: 'CAP IFCA 1',
+            entreprise: 'FRIGOTECH SARL',
+            tuteur: 'M. Bernard',
+            activities: [
+                { type: 'pose', autonomy: 'fait', dayIndex: 0 },
+                { type: 'cablage', autonomy: 'aide', dayIndex: 1 },
+                { type: 'brasage', autonomy: 'observe', dayIndex: 2 },
+                { type: 'controle', autonomy: 'fait', dayIndex: 3 },
+                { type: 'charge', autonomy: 'observe', dayIndex: 5 },
+                { type: 'maintenance', autonomy: 'fait', dayIndex: 6 },
+                { type: 'pose', autonomy: 'seul', dayIndex: 8 },
+                { type: 'cablage', autonomy: 'seul', dayIndex: 9 },
+                { type: 'controle', autonomy: 'seul', dayIndex: 10 },
+                { type: 'depannage', autonomy: 'aide', dayIndex: 12 },
+                { type: 'brasage', autonomy: 'fait', dayIndex: 14 },
+                { type: 'charge', autonomy: 'fait', dayIndex: 15 }
+            ],
+            tuteurEval: {
+                skills: {
+                    supports: 'fait',
+                    unite_ext: 'observe',
+                    cintrage: 'fait',
+                    brasage: 'observe',
+                    cablage: 'maitrise',
+                    etancheite: 'fait',
+                    mesures: 'maitrise'
+                },
+                ratings: { ponctualite: 5, motivation: 4, ecoute: 5, securite: 4, integration: 5 },
+                signature: true
+            },
+            lastActivity: '2026-01-20'
+        },
+        {
+            id: 2,
+            code: 'ELV-DEF456',
+            nom: 'MARTIN',
+            prenom: 'Sophie',
+            classe: 'CAP IFCA 1',
+            entreprise: 'CLIM PROVENCE',
+            tuteur: 'Mme Durand',
+            activities: [
+                { type: 'pose', autonomy: 'observe', dayIndex: 0 },
+                { type: 'cablage', autonomy: 'observe', dayIndex: 1 },
+                { type: 'controle', autonomy: 'aide', dayIndex: 3 },
+                { type: 'maintenance', autonomy: 'aide', dayIndex: 5 },
+                { type: 'pose', autonomy: 'fait', dayIndex: 7 },
+                { type: 'cablage', autonomy: 'fait', dayIndex: 9 }
+            ],
+            tuteurEval: {
+                skills: {
+                    supports: 'fait',
+                    cablage: 'fait',
+                    mesures: 'observe'
+                },
+                ratings: { ponctualite: 4, motivation: 5, ecoute: 4, securite: 5, integration: 4 },
+                signature: true
+            },
+            lastActivity: '2026-01-15'
+        },
+        {
+            id: 3,
+            code: 'ELV-GHI789',
+            nom: 'PETIT',
+            prenom: 'Lucas',
+            classe: 'CAP IFCA 1',
+            entreprise: '',
+            tuteur: '',
+            activities: [
+                { type: 'pose', autonomy: 'observe', dayIndex: 0 },
+                { type: 'autre', autonomy: 'observe', dayIndex: 1 }
+            ],
+            tuteurEval: null,
+            lastActivity: '2026-01-07'
+        },
+        {
+            id: 4,
+            code: 'ELV-JKL012',
+            nom: 'ROUX',
+            prenom: 'Emma',
+            classe: 'CAP IFCA 1',
+            entreprise: 'FROID EXPRESS',
+            tuteur: 'M. Leroy',
+            activities: [
+                { type: 'pose', autonomy: 'fait', dayIndex: 0 },
+                { type: 'faconnage', autonomy: 'fait', dayIndex: 1 },
+                { type: 'brasage', autonomy: 'fait', dayIndex: 2 },
+                { type: 'cablage', autonomy: 'fait', dayIndex: 3 },
+                { type: 'charge', autonomy: 'aide', dayIndex: 4 },
+                { type: 'controle', autonomy: 'fait', dayIndex: 5 },
+                { type: 'maintenance', autonomy: 'fait', dayIndex: 6 },
+                { type: 'depannage', autonomy: 'fait', dayIndex: 8 }
+            ],
+            tuteurEval: {
+                skills: {
+                    supports: 'maitrise',
+                    unite_ext: 'fait',
+                    unite_int: 'fait',
+                    cintrage: 'maitrise',
+                    dudgeon: 'fait',
+                    brasage: 'fait',
+                    cablage: 'maitrise',
+                    charge: 'observe',
+                    etancheite: 'fait',
+                    mesures: 'maitrise'
+                },
+                ratings: { ponctualite: 5, motivation: 5, ecoute: 5, securite: 5, integration: 5 },
+                signature: true
+            },
+            lastActivity: '2026-01-18'
+        },
+        {
+            id: 5,
+            code: 'ELV-MNO345',
+            nom: 'BERNARD',
+            prenom: 'Thomas',
+            classe: 'CAP IFCA 1',
+            entreprise: 'THERMO SERVICES',
+            tuteur: 'M. Garcia',
+            activities: [],
+            tuteurEval: null,
+            lastActivity: null
+        }
+    ];
+    
+    showApp();
+    showToast('🎮 Mode démo — 5 élèves chargés', 'success');
+}
+
+function logout() {
+    document.getElementById('appScreen').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+}
+
+function showApp() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appScreen').style.display = 'block';
+    
+    // Si sync activée, récupérer les données depuis Google
+    if (SYNC_ENABLED) {
+        syncFromGoogle();
+    }
+    
+    renderAll();
+}
+
+// =============================================
+// SYNCHRONISATION GOOGLE SHEETS
+// =============================================
+async function syncFromGoogle() {
+    if (!SYNC_ENABLED) {
+        showToast('Sync non configurée — Configurer l\'URL du script', 'error');
+        return;
+    }
+    
+    const btn = document.getElementById('btnSync');
+    btn.textContent = '⏳ Sync...';
+    btn.disabled = true;
+    
+    try {
+        const url = `${GOOGLE_SCRIPT_URL}?action=getAllData`;
+        
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.success) {
+            // Fusionner les données
+            mergeGoogleData(result.data);
+            saveData();
+            renderAll();
+            showToast(`✅ Sync OK — ${result.data.eleves.length} élèves, ${result.data.activites.length} activités`, 'success');
+        } else {
+            showToast('Erreur sync: ' + result.error, 'error');
+        }
+        
+    } catch (error) {
+        console.error('Erreur sync:', error);
+        showToast('Erreur de connexion — Vérifier l\'URL du script', 'error');
+    }
+    
+    btn.textContent = '🔄 Sync';
+    btn.disabled = false;
+}
+
+function mergeGoogleData(googleData) {
+    // Pour chaque élève dans Google
+    googleData.eleves.forEach(ge => {
+        let local = eleves.find(e => e.code === ge.code);
+        
+        if (!local) {
+            // Nouvel élève
+            local = {
+                id: Date.now() + Math.random(),
+                code: ge.code,
+                nom: ge.nom,
+                prenom: ge.prenom,
+                classe: ge.classe,
+                entreprise: ge.entreprise,
+                tuteur: ge.tuteur,
+                activities: [],
+                tuteurEval: null,
+                lastActivity: ge.derniereActivite
+            };
+            eleves.push(local);
+        } else {
+            // Mise à jour
+            local.entreprise = ge.entreprise || local.entreprise;
+            local.tuteur = ge.tuteur || local.tuteur;
+            local.lastActivity = ge.derniereActivite || local.lastActivity;
+        }
+        
+        // Ajouter les activités
+        const activitesEleve = googleData.activites.filter(a => a.codeEleve === ge.code);
+        if (activitesEleve.length > 0) {
+            local.activities = activitesEleve.map(a => ({
+                type: a.type,
+                autonomy: a.autonomy,
+                dayIndex: a.dayIndex,
+                comment: a.comment,
+                photo: a.hasPhoto,
+                timestamp: a.timestamp
+            }));
+        }
+        
+        // Ajouter l'évaluation tuteur
+        const evalTuteur = googleData.evaluations.find(ev => ev.codeEleve === ge.code);
+        if (evalTuteur && evalTuteur.signature) {
+            local.tuteurEval = {
+                skills: evalTuteur.skills,
+                ratings: evalTuteur.ratings,
+                signature: true
+            };
+            local.entreprise = evalTuteur.entreprise || local.entreprise;
+            local.tuteur = evalTuteur.tuteurNom || local.tuteur;
+        }
+    });
+}
+
+// =============================================
+// RENDER
+// =============================================
+function renderAll() {
+    updateStats();
+    renderAlertes();
+    renderEleves();
+    renderCompetences();
+    renderCodes();
+}
+
+function updateStats() {
+    const totalActivities = eleves.reduce((sum, e) => sum + (e.activities?.length || 0), 0);
+    const tuteurEvals = eleves.filter(e => e.tuteurEval?.signature).length;
+    const alertes = computeAlertes().length;
+    
+    document.getElementById('statEleves').querySelector('.stat-value').textContent = eleves.length;
+    document.getElementById('statActivites').querySelector('.stat-value').textContent = totalActivities;
+    document.getElementById('statTuteurs').querySelector('.stat-value').textContent = tuteurEvals;
+    
+    const alertCard = document.getElementById('statAlertes');
+    alertCard.querySelector('.stat-value').textContent = alertes;
+    alertCard.className = `stat-card ${alertes > 0 ? 'alert' : 'success'}`;
+}
+
+// =============================================
+// ALERTES
+// =============================================
+function computeAlertes() {
+    const alertes = [];
+    const today = new Date();
+    
+    eleves.forEach(e => {
+        // Aucune activité
+        if (!e.activities || e.activities.length === 0) {
+            alertes.push({
+                type: 'danger',
+                icon: '🚨',
+                message: `${e.prenom} ${e.nom} — Aucune activité`,
+                detail: 'Stage non documenté'
+            });
+            return;
+        }
+        
+        // Peu d'activités
+        if (e.activities.length < 5) {
+            alertes.push({
+                type: 'warning',
+                icon: '⚠️',
+                message: `${e.prenom} ${e.nom} — Peu d'activités (${e.activities.length})`,
+                detail: 'Moins de 5 activités enregistrées'
+            });
+        }
+        
+        // Pas d'évaluation tuteur
+        if (!e.tuteurEval?.signature) {
+            alertes.push({
+                type: 'warning',
+                icon: '📝',
+                message: `${e.prenom} ${e.nom} — Évaluation tuteur manquante`,
+                detail: 'Le tuteur n\'a pas encore validé'
+            });
+        }
+        
+        // Pas d'activité récente (> 5 jours)
+        if (e.lastActivity) {
+            const lastDate = new Date(e.lastActivity);
+            const diffDays = Math.floor((today - lastDate) / (1000 * 60 * 60 * 24));
+            if (diffDays > 5) {
+                alertes.push({
+                    type: 'warning',
+                    icon: '📅',
+                    message: `${e.prenom} ${e.nom} — Inactif depuis ${diffDays} jours`,
+                    detail: `Dernière activité : ${lastDate.toLocaleDateString('fr-FR')}`
+                });
+            }
+        }
+    });
+    
+    return alertes;
+}
+
+function renderAlertes() {
+    const alertes = computeAlertes();
+    const container = document.getElementById('alertsList');
+    const badge = document.getElementById('alertsBadge');
+    const alertsContainer = document.getElementById('alertsContainer');
+    
+    badge.textContent = alertes.length;
+    
+    if (alertes.length === 0) {
+        alertsContainer.style.display = 'none';
+        return;
+    }
+    
+    alertsContainer.style.display = 'block';
+    container.innerHTML = alertes.map(a => `
+        <div class="alert-item ${a.type}">
+            <span class="alert-icon">${a.icon}</span>
+            <div class="alert-content">
+                <div class="alert-message">${a.message}</div>
+                <div class="alert-detail">${a.detail}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleAlerts() {
+    const list = document.getElementById('alertsList');
+    const toggle = document.getElementById('alertsToggle');
+    list.classList.toggle('show');
+    toggle.textContent = list.classList.contains('show') ? '▲' : '▼';
+}
+
+// =============================================
+// ÉLÈVES
+// =============================================
+function renderEleves() {
+    const container = document.getElementById('elevesGrid');
+    
+    if (eleves.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:40px; color:var(--gris);">
+                <div style="font-size:3rem; margin-bottom:15px;">👥</div>
+                <p>Aucun élève pour le moment</p>
+                <p style="font-size:0.85rem;">Ajoutez des élèves dans l'onglet "Codes" ou importez des fichiers</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = eleves.map((e, i) => {
+        const actCount = e.activities?.length || 0;
+        const progress = Math.min(100, (actCount / 15) * 100);
+        const status = getEleveStatus(e);
+        const hasTuteur = e.tuteurEval?.signature;
+        
+        return `
+            <div class="eleve-card" onclick="openEleveDetail(${i})">
+                <div class="eleve-status ${status.class}">${status.icon}</div>
+                <div class="eleve-info">
+                    <h3>${e.prenom} ${e.nom}</h3>
+                    <p>${e.entreprise || 'Entreprise non renseignée'} ${hasTuteur ? '✅' : ''}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${progress < 30 ? 'low' : progress < 70 ? 'medium' : 'high'}" style="width:${progress}%"></div>
+                    </div>
+                </div>
+                <div class="eleve-stats">
+                    <div class="eleve-stat-item">
+                        <div class="eleve-stat-value">${actCount}</div>
+                        <div class="eleve-stat-label">Activités</div>
+                    </div>
+                    <div class="eleve-stat-item">
+                        <div class="eleve-stat-value">${countCompetences(e)}</div>
+                        <div class="eleve-stat-label">Compét.</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function getEleveStatus(e) {
+    const actCount = e.activities?.length || 0;
+    const hasTuteur = e.tuteurEval?.signature;
+    
+    if (actCount === 0) return { class: 'danger', icon: '🚨' };
+    if (actCount < 5 || !hasTuteur) return { class: 'warning', icon: '⚠️' };
+    if (actCount >= 10 && hasTuteur) return { class: 'ok', icon: '✓' };
+    return { class: 'neutral', icon: actCount };
+}
+
+function countCompetences(e) {
+    const comps = new Set();
+    
+    // Depuis les activités élève
+    const activityMap = {
+        pose: 'C3.3', cablage: 'C3.6', brasage: 'C3.4', charge: 'C3.9',
+        controle: 'C3.7', maintenance: 'C3.7', depannage: 'C3.7', faconnage: 'C3.4'
+    };
+    
+    e.activities?.forEach(a => {
+        if (activityMap[a.type]) comps.add(activityMap[a.type]);
+    });
+    
+    // Depuis l'évaluation tuteur
+    if (e.tuteurEval?.skills) {
+        Object.entries(e.tuteurEval.skills).forEach(([skill, level]) => {
+            if (level !== 'nonvu' && SKILLS_TO_COMP[skill]) {
+                comps.add(SKILLS_TO_COMP[skill]);
+            }
+        });
+    }
+    
+    return comps.size;
+}
+
+// =============================================
+// DÉTAIL ÉLÈVE
+// =============================================
+function openEleveDetail(index) {
+    currentEleveIndex = index;
+    const e = eleves[index];
+    
+    document.getElementById('modalEleveTitle').textContent = `${e.prenom} ${e.nom}`;
+    
+    const body = document.getElementById('modalEleveBody');
+    const actCount = e.activities?.length || 0;
+    const hasTuteur = e.tuteurEval?.signature;
+    
+    // Calculer les compétences
+    const competences = {};
+    Object.keys(COMPETENCES_REF).forEach(c => competences[c] = 'nonvu');
+    
+    const activityMap = {
+        pose: 'C3.3', cablage: 'C3.6', brasage: 'C3.4', charge: 'C3.9',
+        controle: 'C3.7', maintenance: 'C3.7', depannage: 'C3.7', faconnage: 'C3.4'
+    };
+    
+    e.activities?.forEach(a => {
+        const comp = activityMap[a.type];
+        if (comp) {
+            const levels = { observe: 1, aide: 2, fait: 3, seul: 4 };
+            const currentLevel = levels[competences[comp]] || 0;
+            const newLevel = levels[a.autonomy] || 0;
+            if (newLevel > currentLevel) {
+                competences[comp] = a.autonomy;
+            }
+        }
+    });
+    
+    if (e.tuteurEval?.skills) {
+        Object.entries(e.tuteurEval.skills).forEach(([skill, level]) => {
+            const comp = SKILLS_TO_COMP[skill];
+            if (comp && level !== 'nonvu') {
+                const tuteurLevels = { observe: 2, fait: 3, maitrise: 4 };
+                const currentLevel = { observe: 1, aide: 2, fait: 3, seul: 4 }[competences[comp]] || 0;
+                const newLevel = tuteurLevels[level] || 0;
+                if (newLevel > currentLevel) {
+                    competences[comp] = level === 'maitrise' ? 'seul' : level;
+                }
+            }
+        });
+    }
+    
+    body.innerHTML = `
+        <div style="margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div style="background:var(--gris-clair); padding:12px; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--gris);">Code</div>
+                    <div style="font-weight:600;">${e.code}</div>
+                </div>
+                <div style="background:var(--gris-clair); padding:12px; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--gris);">Classe</div>
+                    <div style="font-weight:600;">${e.classe}</div>
+                </div>
+                <div style="background:var(--gris-clair); padding:12px; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--gris);">Entreprise</div>
+                    <div style="font-weight:600;">${e.entreprise || '—'}</div>
+                </div>
+                <div style="background:var(--gris-clair); padding:12px; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--gris);">Tuteur</div>
+                    <div style="font-weight:600;">${e.tuteur || '—'} ${hasTuteur ? '✅' : '❌'}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-bottom:20px;">
+            <h4 style="font-size:0.9rem; color:var(--bleu); margin-bottom:10px;">📊 Statistiques</h4>
+            <div style="display:flex; gap:15px; text-align:center;">
+                <div style="flex:1; background:var(--gris-clair); padding:15px; border-radius:8px;">
+                    <div style="font-size:1.5rem; font-weight:700; color:var(--bleu);">${actCount}</div>
+                    <div style="font-size:0.75rem; color:var(--gris);">Activités</div>
+                </div>
+                <div style="flex:1; background:var(--gris-clair); padding:15px; border-radius:8px;">
+                    <div style="font-size:1.5rem; font-weight:700; color:var(--bleu);">${Object.values(competences).filter(v => v !== 'nonvu').length}</div>
+                    <div style="font-size:0.75rem; color:var(--gris);">Compétences</div>
+                </div>
+                <div style="flex:1; background:var(--gris-clair); padding:15px; border-radius:8px;">
+                    <div style="font-size:1.5rem; font-weight:700; color:var(--bleu);">${e.activities?.filter(a => a.photo).length || 0}</div>
+                    <div style="font-size:0.75rem; color:var(--gris);">Photos</div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <h4 style="font-size:0.9rem; color:var(--bleu); margin-bottom:10px;">🎯 Compétences</h4>
+            <div style="display:grid; gap:8px;">
+                ${Object.entries(competences).map(([code, level]) => {
+                    const levelLabels = { nonvu: 'Non vu', observe: 'Observé', aide: 'Avec aide', fait: 'Fait', seul: 'Maîtrise' };
+                    const levelColors = { nonvu: '#eee', observe: '#fff3cd', aide: '#d1ecf1', fait: '#cce5ff', seul: '#d4edda' };
+                    return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px; background:var(--gris-clair); border-radius:8px;">
+                            <span style="font-size:0.85rem;"><strong>${code}</strong> ${COMPETENCES_REF[code]}</span>
+                            <span style="font-size:0.75rem; padding:3px 10px; background:${levelColors[level]}; border-radius:10px; font-weight:600;">${levelLabels[level]}</span>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('modalEleve').classList.add('active');
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+// =============================================
+// SYNTHÈSE
+// =============================================
+function genererSynthese() {
+    if (currentEleveIndex === null) return;
+    
+    const e = eleves[currentEleveIndex];
+    closeModal('modalEleve');
+    
+    // Calculer compétences
+    const competences = {};
+    Object.keys(COMPETENCES_REF).forEach(c => competences[c] = 'nonvu');
+    
+    const activityMap = {
+        pose: 'C3.3', cablage: 'C3.6', brasage: 'C3.4', charge: 'C3.9',
+        controle: 'C3.7', maintenance: 'C3.7', depannage: 'C3.7', faconnage: 'C3.4'
+    };
+    
+    e.activities?.forEach(a => {
+        const comp = activityMap[a.type];
+        if (comp) {
+            const levels = { observe: 1, aide: 2, fait: 3, seul: 4 };
+            const currentLevel = levels[competences[comp]] || 0;
+            const newLevel = levels[a.autonomy] || 0;
+            if (newLevel > currentLevel) competences[comp] = a.autonomy;
+        }
+    });
+    
+    if (e.tuteurEval?.skills) {
+        Object.entries(e.tuteurEval.skills).forEach(([skill, level]) => {
+            const comp = SKILLS_TO_COMP[skill];
+            if (comp && level !== 'nonvu') {
+                const tuteurLevels = { observe: 2, fait: 3, maitrise: 4 };
+                const currentLevel = { observe: 1, aide: 2, fait: 3, seul: 4 }[competences[comp]] || 0;
+                const newLevel = tuteurLevels[level] || 0;
+                if (newLevel > currentLevel) competences[comp] = level === 'maitrise' ? 'seul' : level;
+            }
+        });
+    }
+    
+    const moyenneRatings = e.tuteurEval?.ratings 
+        ? (Object.values(e.tuteurEval.ratings).reduce((a,b) => a+b, 0) / Object.values(e.tuteurEval.ratings).length).toFixed(1)
+        : '—';
+    
+    document.getElementById('modalSyntheseBody').innerHTML = `
+        <div class="synthese-preview" id="syntheseContent">
+            <div class="synthese-header">
+                <h2>📋 FICHE SYNTHÈSE PFMP</h2>
+                <p>CAP Installateur en Froid et Conditionnement d'Air</p>
+                <p>Lycée Professionnel Privé Jacques Raynaud — Marseille</p>
+            </div>
+            
+            <div class="synthese-section">
+                <h4>👤 Élève</h4>
+                <div class="synthese-row">
+                    <span class="label">Nom</span>
+                    <span class="value">${e.nom} ${e.prenom}</span>
+                </div>
+                <div class="synthese-row">
+                    <span class="label">Classe</span>
+                    <span class="value">${e.classe}</span>
+                </div>
+                <div class="synthese-row">
+                    <span class="label">Code</span>
+                    <span class="value">${e.code}</span>
+                </div>
+            </div>
+            
+            <div class="synthese-section">
+                <h4>🏢 Entreprise</h4>
+                <div class="synthese-row">
+                    <span class="label">Nom</span>
+                    <span class="value">${e.entreprise || '—'}</span>
+                </div>
+                <div class="synthese-row">
+                    <span class="label">Tuteur</span>
+                    <span class="value">${e.tuteur || '—'}</span>
+                </div>
+                <div class="synthese-row">
+                    <span class="label">Évaluation tuteur</span>
+                    <span class="value">${e.tuteurEval?.signature ? '✅ Validée' : '❌ Non reçue'}</span>
+                </div>
+            </div>
+            
+            <div class="synthese-section">
+                <h4>📊 Bilan quantitatif</h4>
+                <div class="synthese-row">
+                    <span class="label">Activités documentées</span>
+                    <span class="value">${e.activities?.length || 0}</span>
+                </div>
+                <div class="synthese-row">
+                    <span class="label">Compétences touchées</span>
+                    <span class="value">${Object.values(competences).filter(v => v !== 'nonvu').length} / ${Object.keys(COMPETENCES_REF).length}</span>
+                </div>
+                <div class="synthese-row">
+                    <span class="label">Note comportement (tuteur)</span>
+                    <span class="value">${moyenneRatings} / 5</span>
+                </div>
+            </div>
+            
+            <div class="synthese-section">
+                <h4>🎯 Compétences observées</h4>
+                <div class="synthese-skills">
+                    ${Object.entries(competences).filter(([_, l]) => l !== 'nonvu').map(([code, level]) => {
+                        const levelLabels = { observe: 'Observé', aide: 'Avec aide', fait: 'Fait', seul: 'Maîtrise' };
+                        const levelClass = level === 'seul' ? 'maitrise' : level === 'fait' ? 'fait' : 'observe';
+                        return `
+                            <div class="synthese-skill">
+                                <span>${code}</span>
+                                <span class="level ${levelClass}">${levelLabels[level]}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+            
+            <div class="synthese-section">
+                <h4>⚠️ Compétences non vues</h4>
+                <p style="font-size:0.85rem; color:var(--gris);">
+                    ${Object.entries(competences).filter(([_, l]) => l === 'nonvu').map(([code]) => code).join(', ') || 'Aucune'}
+                </p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('modalSynthese').classList.add('active');
+}
+
+function imprimerSynthese() {
+    const content = document.getElementById('syntheseContent').innerHTML;
+    const w = window.open('', '_blank');
+    w.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Synthèse PFMP</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+                .synthese-header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 2px solid #1b3a63; }
+                .synthese-header h2 { color: #1b3a63; margin: 0; }
+                .synthese-header p { color: #666; margin: 5px 0; }
+                .synthese-section { margin-bottom: 20px; }
+                .synthese-section h4 { color: #1b3a63; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+                .synthese-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #eee; }
+                .synthese-row .value { font-weight: bold; }
+                .synthese-skills { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+                .synthese-skill { display: flex; justify-content: space-between; padding: 5px 10px; background: #f5f5f5; border-radius: 5px; }
+                .level { padding: 2px 8px; border-radius: 10px; font-size: 0.8em; }
+                .level.maitrise { background: #d4edda; }
+                .level.fait { background: #d1ecf1; }
+                .level.observe { background: #fff3cd; }
+            </style>
+        </head>
+        <body>${content}</body>
+        </html>
+    `);
+    w.document.close();
+    w.print();
+}
+
+// =============================================
+// COMPÉTENCES CLASSE
+// =============================================
+function renderCompetences() {
+    const container = document.getElementById('competencesGrid');
+    
+    if (eleves.length === 0) {
+        container.innerHTML = '<p style="color:var(--gris);">Aucun élève</p>';
+        return;
+    }
+    
+    // Calculer couverture pour chaque compétence
+    const coverage = {};
+    Object.keys(COMPETENCES_REF).forEach(c => coverage[c] = 0);
+    
+    eleves.forEach(e => {
+        const touched = new Set();
+        
+        const activityMap = {
+            pose: 'C3.3', cablage: 'C3.6', brasage: 'C3.4', charge: 'C3.9',
+            controle: 'C3.7', maintenance: 'C3.7', depannage: 'C3.7', faconnage: 'C3.4'
+        };
+        
+        e.activities?.forEach(a => {
+            if (activityMap[a.type]) touched.add(activityMap[a.type]);
+        });
+        
+        if (e.tuteurEval?.skills) {
+            Object.entries(e.tuteurEval.skills).forEach(([skill, level]) => {
+                if (level !== 'nonvu' && SKILLS_TO_COMP[skill]) {
+                    touched.add(SKILLS_TO_COMP[skill]);
+                }
+            });
+        }
+        
+        touched.forEach(c => coverage[c]++);
+    });
+    
+    container.innerHTML = Object.entries(COMPETENCES_REF).map(([code, name]) => {
+        const count = coverage[code];
+        const percent = eleves.length > 0 ? Math.round((count / eleves.length) * 100) : 0;
+        const badgeClass = percent >= 70 ? 'good' : percent >= 40 ? 'medium' : 'low';
+        const barColor = percent >= 70 ? 'var(--vert)' : percent >= 40 ? 'var(--orange)' : 'var(--rouge)';
+        
+        return `
+            <div class="competence-card">
+                <div class="competence-header">
+                    <span class="competence-code">${code}</span>
+                    <span class="competence-badge ${badgeClass}">${percent}%</span>
+                </div>
+                <div class="competence-name">${name}</div>
+                <div class="competence-bar">
+                    <div class="competence-fill" style="width:${percent}%; background:${barColor};"></div>
+                </div>
+                <div style="font-size:0.75rem; color:var(--gris); margin-top:5px;">
+                    ${count} / ${eleves.length} élèves
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// =============================================
+// CODES
+// =============================================
+function renderCodes() {
+    const container = document.getElementById('codesListe');
+    
+    if (eleves.length === 0) {
+        container.innerHTML = '<p style="color:var(--gris); text-align:center;">Aucun élève</p>';
+        return;
+    }
+    
+    container.innerHTML = `
+        <table style="width:100%; font-size:0.85rem; border-collapse:collapse;">
+            <thead>
+                <tr style="background:var(--gris-clair);">
+                    <th style="padding:10px; text-align:left;">Élève</th>
+                    <th style="padding:10px; text-align:left;">Code</th>
+                    <th style="padding:10px; text-align:center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${eleves.map((e, i) => `
+                    <tr style="border-bottom:1px solid #eee;">
+                        <td style="padding:10px;">${e.prenom} ${e.nom}</td>
+                        <td style="padding:10px; font-family:monospace;">${e.code}</td>
+                        <td style="padding:10px; text-align:center;">
+                            <button onclick="supprimerEleve(${i})" style="background:none; border:none; cursor:pointer; font-size:1rem;">🗑️</button>
+                        </td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+    `;
+}
+
+function ajouterEleve() {
+    const nom = document.getElementById('inputNom').value.trim().toUpperCase();
+    const prenom = document.getElementById('inputPrenom').value.trim();
+    const classe = document.getElementById('inputClasse').value;
+    
+    if (!nom || !prenom) {
+        showToast('Remplissez le nom et prénom', 'error');
+        return;
+    }
+    
+    const code = 'ELV-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    eleves.push({
+        id: Date.now(),
+        code,
+        nom,
+        prenom,
+        classe,
+        entreprise: '',
+        tuteur: '',
+        activities: [],
+        tuteurEval: null,
+        lastActivity: null
+    });
+    
+    saveData();
+    renderAll();
+    
+    document.getElementById('inputNom').value = '';
+    document.getElementById('inputPrenom').value = '';
+    
+    showToast(`Code généré : ${code}`, 'success');
+}
+
+function supprimerEleve(index) {
+    if (!confirm(`Supprimer ${eleves[index].prenom} ${eleves[index].nom} ?`)) return;
+    eleves.splice(index, 1);
+    saveData();
+    renderAll();
+    showToast('Élève supprimé', 'success');
+}
+
+function imprimerCodes() {
+    let html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Codes PFMP</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; page-break-inside: avoid; }
+                .nom { font-size: 1.2rem; font-weight: bold; }
+                .code { font-family: monospace; font-size: 1.5rem; background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0; }
+            </style>
+        </head>
+        <body>
+            <h1>📋 Codes PFMP Stage</h1>
+            <p>CAP IFCA — Lycée Professionnel Privé Jacques Raynaud</p>
+            <hr>
+    `;
+    
+    eleves.forEach(e => {
+        html += `
+            <div class="card">
+                <div class="nom">${e.prenom} ${e.nom}</div>
+                <div>${e.classe}</div>
+                <div class="code">🎓 ${e.code}</div>
+                <div style="font-size:0.85rem; color:#666;">
+                    <strong>Page élève :</strong> pfmp_eleve_v2.html<br>
+                    <strong>Page tuteur :</strong> pfmp_tuteur_v2.html<br>
+                    <strong>MDP tuteur :</strong> PFMP2026
+                </div>
+            </div>
+        `;
+    });
+    
+    html += '</body></html>';
+    
+    const w = window.open('', '_blank');
+    w.document.write(html);
+    w.document.close();
+    w.print();
+}
+
+// =============================================
+// IMPORT
+// =============================================
+function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('dragover');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('dragover');
+    importFiles(e.dataTransfer.files);
+}
+
+function handleFileSelect(e) {
+    importFiles(e.target.files);
+}
+
+function importFiles(files) {
+    const results = [];
+    let imported = 0;
+    let errors = 0;
+    
+    Array.from(files).forEach(file => {
+        if (!file.name.endsWith('.json')) {
+            results.push({ file: file.name, status: 'error', message: 'Pas un fichier JSON' });
+            errors++;
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                if (data.type === 'pfmp_eleve') {
+                    // Import données élève
+                    let eleve = eleves.find(el => el.code === data.eleve?.code);
+                    if (!eleve) {
+                        eleve = {
+                            id: Date.now(),
+                            code: data.eleve?.code || 'ELV-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                            nom: data.eleve?.nom || '',
+                            prenom: data.eleve?.prenom || '',
+                            classe: data.eleve?.classe || 'CAP IFCA',
+                            entreprise: '',
+                            tuteur: '',
+                            activities: [],
+                            tuteurEval: null
+                        };
+                        eleves.push(eleve);
+                    }
+                    
+                    eleve.entreprise = data.entreprise || eleve.entreprise;
+                    eleve.tuteur = data.tuteur || eleve.tuteur;
+                    eleve.activities = data.activities || eleve.activities;
+                    eleve.lastActivity = data.exportDate;
+                    
+                    results.push({ file: file.name, status: 'success', message: `${data.eleve?.prenom} ${data.eleve?.nom} — Données élève` });
+                    imported++;
+                    
+                } else if (data.type === 'pfmp_tuteur') {
+                    // Import évaluation tuteur
+                    let eleve = eleves.find(el => el.code === data.eleve?.code);
+                    if (!eleve) {
+                        eleve = {
+                            id: Date.now(),
+                            code: data.eleve?.code || 'ELV-' + Math.random().toString(36).substring(2, 8).toUpperCase(),
+                            nom: data.eleve?.nom || '',
+                            prenom: data.eleve?.prenom || '',
+                            classe: data.eleve?.classe || 'CAP IFCA',
+                            entreprise: '',
+                            tuteur: '',
+                            activities: [],
+                            tuteurEval: null
+                        };
+                        eleves.push(eleve);
+                    }
+                    
+                    eleve.entreprise = data.entreprise?.nom || eleve.entreprise;
+                    eleve.tuteur = data.tuteur?.nom || eleve.tuteur;
+                    eleve.tuteurEval = data.evaluation || {};
+                    eleve.tuteurEval.signature = !!data.signature;
+                    
+                    results.push({ file: file.name, status: 'success', message: `${data.eleve?.prenom} ${data.eleve?.nom} — Éval tuteur` });
+                    imported++;
+                    
+                } else {
+                    results.push({ file: file.name, status: 'error', message: 'Format non reconnu' });
+                    errors++;
+                }
+                
+                showImportResults(results, imported, errors);
+                
+            } catch (err) {
+                results.push({ file: file.name, status: 'error', message: err.message });
+                errors++;
+                showImportResults(results, imported, errors);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
+function showImportResults(results, imported, errors) {
+    const container = document.getElementById('importResults');
+    container.classList.add('show');
+    
+    container.innerHTML = `
+        <div style="margin-bottom:15px;">
+            <strong style="color:var(--vert);">✅ ${imported} importé(s)</strong>
+            ${errors > 0 ? `<strong style="color:var(--rouge); margin-left:15px;">❌ ${errors} erreur(s)</strong>` : ''}
+        </div>
+        <div style="max-height:200px; overflow-y:auto;">
+            ${results.map(r => `
+                <div style="padding:8px; background:${r.status === 'success' ? '#e8f5e9' : '#ffebee'}; margin-bottom:5px; border-radius:5px; font-size:0.85rem;">
+                    ${r.status === 'success' ? '✅' : '❌'} ${r.message}
+                </div>
+            `).join('')}
+        </div>
+    `;
+    
+    saveData();
+    renderAll();
+}
+
+// =============================================
+// SAUVEGARDE
+// =============================================
+function loadData() {
+    const saved = localStorage.getItem('pfmp_prof_v2');
+    if (saved) {
+        eleves = JSON.parse(saved);
+    }
+}
+
+function saveData() {
+    localStorage.setItem('pfmp_prof_v2', JSON.stringify(eleves));
+}
+
+function sauvegarderBase() {
+    const backup = {
+        version: '2.0',
+        type: 'pfmp_prof_backup',
+        date: new Date().toISOString(),
+        eleves
+    };
+    
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PFMP_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('Sauvegarde téléchargée', 'success');
+}
+
+function restaurerBase(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const data = JSON.parse(event.target.result);
+            if (data.type !== 'pfmp_prof_backup') {
+                showToast('Fichier de sauvegarde invalide', 'error');
+                return;
+            }
+            
+            if (!confirm(`Restaurer la sauvegarde du ${new Date(data.date).toLocaleDateString('fr-FR')} ?\n\nCela remplacera toutes les données.`)) return;
+            
+            eleves = data.eleves || [];
+            saveData();
+            renderAll();
+            showToast('Base restaurée', 'success');
+            
+        } catch (err) {
+            showToast('Erreur: ' + err.message, 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+// =============================================
+// EXPORT CCF
+// =============================================
+function exportCCF() {
+    const exportData = {
+        version: '2.0',
+        type: 'pfmp_ccf_export',
+        date: new Date().toISOString(),
+        eleves: eleves.map(e => ({
+            code: e.code,
+            nom: e.nom,
+            prenom: e.prenom,
+            classe: e.classe,
+            entreprise: e.entreprise,
+            tuteur: e.tuteur,
+            activites: e.activities?.length || 0,
+            tuteurEval: e.tuteurEval ? {
+                skills: e.tuteurEval.skills,
+                ratings: e.tuteurEval.ratings,
+                validated: !!e.tuteurEval.signature
+            } : null
+        }))
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PFMP_Export_CCF_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('Export CCF téléchargé', 'success');
+}
+
+// =============================================
+// NAVIGATION
+// =============================================
+function showTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+    
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(`section-${tab}`).classList.add('active');
+}
+
+function openPearltrees() {
+    window.open(PEARLTREES_URL, '_blank');
+}
+
+// =============================================
+// TOAST
+// =============================================
+function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+
+</body>
+</html>
