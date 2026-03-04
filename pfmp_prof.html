@@ -1,0 +1,2947 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1b3a63">
+    <title>👨‍🏫 PFMP Stage — Professeur</title>
+    <style>
+        :root {
+            --bleu: #1b3a63;
+            --bleu-clair: #2d5a8c;
+            --orange: #ff6b35;
+            --vert: #27ae60;
+            --rouge: #e74c3c;
+            --jaune: #f39c12;
+            --violet: #9b59b6;
+            --gris: #6c757d;
+            --gris-clair: #f8f9fa;
+            --blanc: #ffffff;
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            background: var(--gris-clair);
+            min-height: 100vh;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        /* === ÉCRANS === */
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: block; }
+        
+        /* === LOGIN === */
+        .login-screen {
+            background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-clair) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .login-badge {
+            display: inline-block;
+            background: var(--bleu);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .login-title { font-size: 1.3rem; font-weight: 700; color: var(--bleu); margin-bottom: 5px; }
+        .login-subtitle { font-size: 0.85rem; color: var(--gris); margin-bottom: 25px; }
+        
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius);
+            margin-bottom: 10px;
+        }
+        
+        .login-input:focus { outline: none; border-color: var(--bleu); }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: var(--bleu);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover { background: var(--bleu-clair); }
+        
+        .demo-btn {
+            margin-top: 15px;
+            padding: 12px;
+            background: none;
+            border: 2px dashed var(--orange);
+            color: var(--orange);
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .login-footer {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: var(--gris);
+            line-height: 1.4;
+        }
+        
+        /* === HEADER === */
+        .header {
+            background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 1rem; font-weight: 700; }
+        
+        .header-actions { display: flex; gap: 8px; }
+        .header-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .header-btn:hover { background: rgba(255,255,255,0.3); }
+        
+        .header-stats {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 15px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 70px;
+        }
+        
+        .stat-card .value { font-size: 1.3rem; font-weight: 700; }
+        .stat-card .label { font-size: 0.65rem; opacity: 0.9; }
+        .stat-card.alert { background: var(--rouge); }
+        .stat-card.warning { background: var(--orange); }
+        .stat-card.success { background: var(--vert); }
+        
+        /* === TABS === */
+        .main-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+            overflow-x: auto;
+            position: sticky;
+            top: 88px;
+            z-index: 99;
+        }
+        
+        .main-tab {
+            flex: 1;
+            min-width: 80px;
+            padding: 12px 8px;
+            border: none;
+            background: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gris);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+        }
+        
+        .main-tab:hover { color: var(--bleu); }
+        .main-tab.active { color: var(--bleu); border-bottom-color: var(--orange); }
+        .main-tab .icon { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+        .main-tab .badge {
+            display: inline-block;
+            background: var(--rouge);
+            color: white;
+            padding: 1px 5px;
+            border-radius: 8px;
+            font-size: 0.55rem;
+            vertical-align: middle;
+        }
+        
+        /* === MAIN === */
+        .main { padding: 15px; max-width: 900px; margin: 0 auto; padding-bottom: 30px; }
+        
+        /* === SECTIONS === */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* === CARDS === */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--bleu);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gris-clair);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-subtitle { font-size: 0.8rem; color: var(--gris); margin-bottom: 15px; }
+        
+        /* === ALERTS === */
+        .alerts-list { display: flex; flex-direction: column; gap: 10px; }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: #fff5f5;
+            border-left: 4px solid var(--rouge);
+        }
+        
+        .alert-item.warning { background: #fffbeb; border-left-color: var(--jaune); }
+        .alert-item.info { background: #f0f9ff; border-left-color: var(--bleu); }
+        
+        .alert-item .icon { font-size: 1.3rem; }
+        .alert-item .content { flex: 1; }
+        .alert-item .title { font-weight: 600; font-size: 0.85rem; }
+        .alert-item .desc { font-size: 0.75rem; color: var(--gris); }
+        
+        /* === ELEVES GRID === */
+        .eleves-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .eleve-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid var(--vert);
+        }
+        
+        .eleve-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .eleve-card.warning { border-left-color: var(--jaune); }
+        .eleve-card.danger { border-left-color: var(--rouge); }
+        
+        .eleve-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .eleve-name { font-weight: 700; color: var(--bleu); }
+        .eleve-entreprise { font-size: 0.8rem; color: var(--gris); }
+        
+        .eleve-status {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .eleve-status.ok { background: #d4edda; color: #155724; }
+        .eleve-status.warning { background: #fff3cd; color: #856404; }
+        .eleve-status.danger { background: #f8d7da; color: #721c24; }
+        
+        .eleve-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.75rem;
+            color: var(--gris);
+        }
+        
+        .eleve-progress {
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .eleve-progress-bar {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        
+        .eleve-progress-bar.low { background: var(--rouge); }
+        .eleve-progress-bar.medium { background: var(--jaune); }
+        .eleve-progress-bar.high { background: var(--vert); }
+        
+        /* === FORM === */
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #444;
+        }
+        .form-group .required { color: var(--rouge); }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--bleu);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .form-hint { font-size: 0.7rem; color: var(--gris); margin-top: 4px; }
+        
+        /* === BUTTONS === */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+        
+        .btn-primary { background: var(--bleu); color: white; }
+        .btn-success { background: var(--vert); color: white; }
+        .btn-orange { background: var(--orange); color: white; }
+        .btn-outline { background: white; border: 2px solid var(--bleu); color: var(--bleu); }
+        .btn-sm { padding: 8px 12px; font-size: 0.75rem; }
+        .btn-block { width: 100%; }
+        
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        /* === COMMUNICATION === */
+        .comm-section { margin-bottom: 20px; }
+        .comm-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--bleu);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tuteur-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .tuteur-header {
+            padding: 15px;
+            background: var(--gris-clair);
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tuteur-header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .tuteur-name { font-weight: 700; color: var(--bleu); }
+        .tuteur-entreprise { font-size: 0.8rem; color: var(--gris); }
+        .tuteur-eleves { font-size: 0.75rem; color: var(--gris); margin-top: 5px; }
+        
+        .tuteur-contacts {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.75rem;
+        }
+        
+        .tuteur-contact {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--gris);
+        }
+        
+        .tuteur-body { padding: 15px; }
+        
+        .channel-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .channel-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 15px;
+            background: var(--gris-clair);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .channel-option:hover { border-color: var(--bleu-clair); }
+        .channel-option.selected { border-color: var(--vert); background: rgba(39,174,96,0.1); }
+        .channel-option.disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .channel-option .icon { font-size: 1.2rem; }
+        .channel-option .label { font-size: 0.8rem; font-weight: 600; }
+        
+        .tuteur-actions { display: flex; gap: 10px; }
+        
+        /* === MESSAGE TEMPLATES === */
+        .template-tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .template-tab {
+            padding: 8px 15px;
+            background: var(--gris-clair);
+            border: none;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--gris);
+        }
+        
+        .template-tab:hover { background: #e0e0e0; }
+        .template-tab.active { background: var(--bleu); color: white; }
+        
+        .template-preview {
+            background: var(--gris-clair);
+            border-radius: var(--radius);
+            padding: 15px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        
+        .template-preview .var { color: var(--orange); font-weight: 600; }
+        
+        /* === COMPETENCES TABLE === */
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .comp-table th, .comp-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.8rem;
+        }
+        
+        .comp-table th {
+            background: var(--gris-clair);
+            font-weight: 600;
+            color: var(--bleu);
+        }
+        
+        .comp-progress {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .comp-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .comp-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .comp-bar-fill.low { background: var(--rouge); }
+        .comp-bar-fill.medium { background: var(--jaune); }
+        .comp-bar-fill.high { background: var(--vert); }
+        
+        /* === IMPORT === */
+        .drop-zone {
+            border: 3px dashed #ccc;
+            border-radius: var(--radius);
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--bleu);
+            background: rgba(27,58,99,0.05);
+        }
+        
+        .drop-zone .icon { font-size: 2.5rem; margin-bottom: 10px; color: var(--gris); }
+        .drop-zone .text { color: var(--gris); font-size: 0.9rem; }
+        .drop-zone input { display: none; }
+        
+        .import-results {
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--gris-clair);
+            border-radius: var(--radius);
+        }
+        
+        .import-result {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 0.85rem;
+        }
+        
+        .import-result.success { color: var(--vert); }
+        .import-result.error { color: var(--rouge); }
+        
+        /* === CODES === */
+        .codes-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .code-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: var(--gris-clair);
+            border-radius: 10px;
+        }
+        
+        .code-item .info { }
+        .code-item .name { font-weight: 600; font-size: 0.85rem; }
+        .code-item .code { font-family: monospace; font-size: 0.75rem; color: var(--gris); }
+        .code-item .delete {
+            background: none;
+            border: none;
+            color: var(--gris);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .code-item .delete:hover { color: var(--rouge); }
+        
+        /* === MODAL === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        
+        .modal-header h3 { font-size: 1rem; color: var(--bleu); }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gris);
+        }
+        
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        /* === INFO BOX === */
+        .info-box {
+            background: rgba(27,58,99,0.05);
+            border-left: 4px solid var(--bleu);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+        }
+        
+        .info-box p { font-size: 0.8rem; color: #444; line-height: 1.5; }
+        
+        /* === EMPTY STATE === */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gris);
+        }
+        
+        .empty-state .icon { font-size: 3rem; margin-bottom: 15px; }
+        .empty-state p { font-size: 0.9rem; margin-bottom: 20px; }
+        
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bleu);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--vert); }
+        .toast.error { background: var(--rouge); }
+        
+        /* === CONFIG ENSEIGNANT === */
+        .enseignant-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--gris-clair);
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+        }
+        
+        .enseignant-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--bleu);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .enseignant-info { flex: 1; }
+        .enseignant-name { font-weight: 700; color: var(--bleu); }
+        .enseignant-contact { font-size: 0.8rem; color: var(--gris); }
+    </style>
+</head>
+<body>
+
+<!-- ========================================
+     ÉCRAN CONNEXION
+     ======================================== -->
+<div class="screen login-screen active" id="loginScreen">
+    <div class="login-box">
+        <div class="login-logos">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTIwIDQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUiIHk9IjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWIzYTYzIj5FUVVBVElPPC90ZXh0Pjx0ZXh0IHg9IjUiIHk9IjM1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iIzY2NiI+Q3LDqWF0ZXVyIGQnYXZlbmlyPC90ZXh0Pjwvc3ZnPg==" alt="EQUATIO">
+        </div>
+        
+        <div class="login-badge">👨‍🏫 ESPACE PROFESSEUR</div>
+        <div class="login-title">Suivi de stage PFMP</div>
+        <div class="login-subtitle">Dashboard & Communication</div>
+        
+        <input type="password" class="login-input" id="passwordInput" placeholder="Mot de passe">
+        
+        <button class="login-btn" onclick="login()">Accéder au dashboard</button>
+        
+        <button class="demo-btn" onclick="loginDemo()">🎮 Mode Démo (5 élèves)</button>
+        
+        <div class="login-footer">
+            <strong>Lycée Professionnel Privé Jacques Raynaud</strong><br>
+            Campus EQUATIO — 59 Trav. Charles Susini — 13013 Marseille<br>
+            📞 04 91 66 39 40
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     ÉCRAN PRINCIPAL
+     ======================================== -->
+<div class="screen" id="appScreen">
+    <div class="header">
+        <div class="header-top">
+            <h1>👨‍🏫 PFMP Stage — Dashboard</h1>
+            <div class="header-actions">
+                <button class="header-btn" onclick="showTab('config')">⚙️</button>
+                <button class="header-btn" onclick="logout()">🚪</button>
+            </div>
+        </div>
+        <div class="header-stats" id="headerStats">
+            <!-- Généré par JS -->
+        </div>
+    </div>
+    
+    <div class="main-tabs">
+        <button class="main-tab active" data-tab="dashboard" onclick="showTab('dashboard')">
+            <span class="icon">📊</span>
+            Dashboard
+        </button>
+        <button class="main-tab" data-tab="eleves" onclick="showTab('eleves')">
+            <span class="icon">👥</span>
+            Élèves
+        </button>
+        <button class="main-tab" data-tab="communication" onclick="showTab('communication')">
+            <span class="icon">📬</span>
+            Communication
+        </button>
+        <button class="main-tab" data-tab="partenaires" onclick="showTab('partenaires')">
+            <span class="icon">🏢</span>
+            Partenaires
+        </button>
+        <button class="main-tab" data-tab="competences" onclick="showTab('competences')">
+            <span class="icon">📋</span>
+            Compétences
+        </button>
+        <button class="main-tab" data-tab="import" onclick="showTab('import')">
+            <span class="icon">📥</span>
+            Import
+        </button>
+        <button class="main-tab" data-tab="codes" onclick="showTab('codes')">
+            <span class="icon">🔑</span>
+            Codes
+        </button>
+        <button class="main-tab" data-tab="config" onclick="showTab('config')">
+            <span class="icon">⚙️</span>
+            Config
+        </button>
+    </div>
+    
+    <main class="main">
+        <!-- ========================================
+             DASHBOARD
+             ======================================== -->
+        <div class="section active" id="section-dashboard">
+            <div class="card">
+                <div class="card-title">🚨 Alertes</div>
+                <div class="alerts-list" id="alertsList">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📊 Aperçu rapide</div>
+                <div class="eleves-grid" id="dashboardEleves">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             ÉLÈVES
+             ======================================== -->
+        <div class="section" id="section-eleves">
+            <div class="card">
+                <div class="card-title">👥 Liste des élèves</div>
+                <div class="eleves-grid" id="elevesList">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             COMMUNICATION
+             ======================================== -->
+        <div class="section" id="section-communication">
+            <div class="card">
+                <div class="card-title">📬 Envoi des rappels hebdomadaires</div>
+                <div class="card-subtitle">Sélectionnez les canaux de communication pour chaque tuteur puis envoyez</div>
+                
+                <div class="comm-section">
+                    <div class="comm-title">👨‍🏫 Qui envoie ce message ?</div>
+                    <div id="enseignantSelector" class="channel-options" style="flex-direction:row;flex-wrap:wrap;">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                
+                <div class="comm-section">
+                    <div class="comm-title">📝 Message type</div>
+                    <div class="template-tabs">
+                        <button class="template-tab active" onclick="selectTemplate('rappel')">📅 Rappel hebdo</button>
+                        <button class="template-tab" onclick="selectTemplate('bienvenue')">👋 Bienvenue</button>
+                        <button class="template-tab" onclick="selectTemplate('remerciement')">🙏 Remerciement</button>
+                        <button class="template-tab" onclick="selectTemplate('alerte')">🚨 Alerte</button>
+                    </div>
+                    <div class="template-preview" id="templatePreview">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                
+                <div class="comm-section">
+                    <div class="comm-title">👷 Tuteurs</div>
+                    <div id="tuteursList">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                
+                <div class="comm-section">
+                    <div class="comm-title">👨‍🎓 Élèves (WhatsApp)</div>
+                    <div class="info-box">
+                        <p>Les élèves seront également notifiés par WhatsApp pour leur rappeler que leur tuteur doit valider.</p>
+                    </div>
+                    <div id="elevesNotifList">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                
+                <button class="btn btn-success btn-block" onclick="sendAllReminders()">
+                    📤 Envoyer tous les rappels sélectionnés
+                </button>
+                
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-outline btn-block" onclick="exportVCF()">
+                        📥 Exporter contacts WhatsApp (.vcf)
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             PARTENAIRES (CRM Tuteurs)
+             ======================================== -->
+        <div class="section" id="section-partenaires">
+            <div class="card">
+                <div class="card-title">🏢 Base Partenaires</div>
+                <div class="card-subtitle">Entreprises et tuteurs ayant accueilli des stagiaires — pour mailings, taxe d'apprentissage, remerciements...</div>
+                
+                <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;align-items:center;">
+                    <select id="filterSecteur" onchange="renderPartenaires()" style="padding:8px;border-radius:8px;border:1px solid #ddd;">
+                        <option value="">Tous secteurs</option>
+                        <option value="Frigoriste">Frigoriste</option>
+                        <option value="Climatisation / PAC">Climatisation / PAC</option>
+                        <option value="Plomberie / Chauffage">Plomberie / Chauffage</option>
+                        <option value="Électricité">Électricité</option>
+                        <option value="Électroménager">Électroménager</option>
+                        <option value="Multi-techniques">Multi-techniques</option>
+                    </select>
+                    <select id="filterAutorisation" onchange="renderPartenaires()" style="padding:8px;border-radius:8px;border:1px solid #ddd;">
+                        <option value="">Toutes autorisations</option>
+                        <option value="oui">✅ Autorisation OK</option>
+                        <option value="non">❌ Pas d'autorisation</option>
+                        <option value="attente">⏳ En attente</option>
+                    </select>
+                    <span id="partenairesCount" style="font-size:0.8rem;color:var(--gris);"></span>
+                </div>
+                
+                <div id="partenairesList">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📤 Export Mailing</div>
+                <div class="card-subtitle">Exporter uniquement les contacts ayant donné leur autorisation</div>
+                
+                <div class="info-box">
+                    <p>⚠️ <strong>RGPD</strong> — Seuls les contacts avec autorisation "✅ OK" seront exportés pour les mailings.</p>
+                </div>
+                
+                <button class="btn btn-primary btn-block" onclick="exportMailingCSV()">
+                    📧 Exporter emails (CSV)
+                </button>
+                
+                <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="exportMailingVCF()">
+                    📱 Exporter contacts WhatsApp (VCF)
+                </button>
+                
+                <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="copyEmailsToClipboard()">
+                    📋 Copier tous les emails
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📝 Mailing rapide</div>
+                <div class="card-subtitle">Envoyer un email groupé aux partenaires autorisés</div>
+                
+                <div class="form-group">
+                    <label>Objet</label>
+                    <input type="text" id="mailingSubject" placeholder="Taxe d'apprentissage 2026 — Lycée Jacques Raynaud">
+                </div>
+                
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea id="mailingBody" rows="6" placeholder="Bonjour,
+
+Nous tenons à vous remercier pour votre engagement dans la formation de nos élèves..."></textarea>
+                </div>
+                
+                <button class="btn btn-success btn-block" onclick="openMailingClient()">
+                    📧 Ouvrir dans ma messagerie
+                </button>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             COMPÉTENCES
+             ======================================== -->
+        <div class="section" id="section-competences">
+            <div class="card">
+                <div class="card-title">📋 Couverture des compétences EP2</div>
+                <div class="card-subtitle">Pourcentage d'élèves ayant été exposés à chaque compétence</div>
+                
+                <table class="comp-table" id="competencesTable">
+                    <!-- Généré par JS -->
+                </table>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             IMPORT
+             ======================================== -->
+        <div class="section" id="section-import">
+            <div class="card">
+                <div class="card-title">📥 Importer des données</div>
+                
+                <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <div class="icon">📁</div>
+                    <div class="text">Glissez vos fichiers JSON ici<br>ou cliquez pour sélectionner</div>
+                    <input type="file" id="fileInput" accept=".json" multiple onchange="handleFileSelect(event)">
+                </div>
+                
+                <div class="import-results" id="importResults" style="display:none;">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">💾 Sauvegarde & Restauration</div>
+                
+                <button class="btn btn-primary btn-block" onclick="exportAllData()">
+                    💾 Sauvegarder toutes les données
+                </button>
+                
+                <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="document.getElementById('restoreInput').click()">
+                    📂 Restaurer une sauvegarde
+                </button>
+                <input type="file" id="restoreInput" accept=".json" style="display:none" onchange="restoreData(event)">
+            </div>
+        </div>
+        
+        <!-- ========================================
+             CODES
+             ======================================== -->
+        <div class="section" id="section-codes">
+            <div class="card">
+                <div class="card-title">🔑 Codes élèves</div>
+                
+                <div class="form-row" style="margin-bottom:15px;">
+                    <div class="form-group" style="margin:0;">
+                        <input type="text" id="newNom" placeholder="Nom">
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                        <input type="text" id="newPrenom" placeholder="Prénom">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <select id="newClasse">
+                        <option value="CAP IFCA 1">CAP IFCA 1ère année</option>
+                        <option value="CAP IFCA 2">CAP IFCA 2ème année</option>
+                        <option value="BAC PRO MFER">BAC PRO MFER</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                <button class="btn btn-success btn-block" onclick="addCode()">➕ Générer un code</button>
+                
+                <div style="margin-top:20px;">
+                    <div class="codes-list" id="codesList">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+                
+                <button class="btn btn-outline btn-block" style="margin-top:15px;" onclick="printCodes()">
+                    🖨️ Imprimer tous les codes
+                </button>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             CONFIG
+             ======================================== -->
+        <div class="section" id="section-config">
+            <div class="card">
+                <div class="card-title">👨‍🏫 Équipe pédagogique</div>
+                <div class="card-subtitle">Enseignants qui suivent les stages PFMP</div>
+                
+                <div id="enseignantsList">
+                    <!-- Généré par JS -->
+                </div>
+                
+                <button class="btn btn-outline btn-block" style="margin-top:15px;" onclick="openAddEnseignant()">
+                    ➕ Ajouter un enseignant
+                </button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">🏫 Établissement</div>
+                
+                <div class="enseignant-card">
+                    <div class="enseignant-avatar">JR</div>
+                    <div class="enseignant-info">
+                        <div class="enseignant-name">Lycée Professionnel Privé Jacques Raynaud</div>
+                        <div class="enseignant-contact">Campus EQUATIO — 59 Trav. Charles Susini — 13013 Marseille</div>
+                        <div class="enseignant-contact">📞 04 91 66 39 40 — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="90e3f5f3e2f5e4f1fae2d0f6ffe2fdf1e4f9fffefdf5e4f9f5e2bef6e2">[email&#160;protected]</a></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">⚙️ Paramètres</div>
+                
+                <div class="form-group">
+                    <label>🔑 Mot de passe dashboard</label>
+                    <input type="text" id="configPassword" placeholder="PROF2026">
+                    <div class="form-hint">Mot de passe pour accéder au dashboard</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔑 Mot de passe tuteur</label>
+                    <input type="text" id="configPasswordTuteur" placeholder="PFMP2026">
+                    <div class="form-hint">Mot de passe donné aux tuteurs</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Date début stage</label>
+                    <input type="date" id="configStageStart">
+                </div>
+                
+                <div class="form-group">
+                    <label>📅 Durée (semaines)</label>
+                    <select id="configStageDuration">
+                        <option value="2">2 semaines</option>
+                        <option value="3">3 semaines</option>
+                        <option value="4" selected>4 semaines</option>
+                        <option value="5">5 semaines</option>
+                        <option value="6">6 semaines</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary btn-block" onclick="saveConfig()">💾 Enregistrer</button>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">🗑️ Danger</div>
+                <button class="btn btn-outline btn-block" style="border-color:var(--rouge);color:var(--rouge);" onclick="clearAllData()">
+                    🗑️ Supprimer toutes les données
+                </button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ========================================
+     MODAL DÉTAIL ÉLÈVE
+     ======================================== -->
+<div class="modal" id="modalEleve">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalEleveTitle">Détail élève</h3>
+            <button class="modal-close" onclick="closeModal('modalEleve')">&times;</button>
+        </div>
+        <div class="modal-body" id="modalEleveBody">
+            <!-- Généré par JS -->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalEleve')">Fermer</button>
+            <button class="btn btn-primary" onclick="generateSynthese()">📄 Générer synthèse PDF</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     MODAL AJOUTER/MODIFIER ENSEIGNANT
+     ======================================== -->
+<div class="modal" id="modalEnseignant">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalEnseignantTitle">Ajouter un enseignant</h3>
+            <button class="modal-close" onclick="closeModal('modalEnseignant')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="enseignantId">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nom <span class="required">*</span></label>
+                    <input type="text" id="enseignantNom" placeholder="DUPUIS">
+                </div>
+                <div class="form-group">
+                    <label>Prénom <span class="required">*</span></label>
+                    <input type="text" id="enseignantPrenom" placeholder="Jean">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>📧 Email</label>
+                <input type="email" id="enseignantEmail" placeholder="j.dupuis@...">
+            </div>
+            
+            <div class="form-group">
+                <label>📱 Téléphone</label>
+                <input type="tel" id="enseignantTel" placeholder="06 XX XX XX XX">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalEnseignant')">Annuler</button>
+            <button class="btn btn-success" onclick="saveEnseignant()">💾 Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     MODAL ÉDITER PARTENAIRE
+     ======================================== -->
+<div class="modal" id="modalPartenaire">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalPartenaireTitle">Fiche Partenaire</h3>
+            <button class="modal-close" onclick="closeModal('modalPartenaire')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="partenaireId">
+            
+            <div style="background:var(--gris-clair);padding:15px;border-radius:10px;margin-bottom:15px;">
+                <div style="font-weight:700;color:var(--bleu);margin-bottom:5px;" id="partenaireEntreprise">FRIGOTECH SARL</div>
+                <div style="font-size:0.85rem;color:var(--gris);" id="partenaireSecteur">Climatisation / PAC</div>
+            </div>
+            
+            <div class="form-group">
+                <label>👷 Tuteur</label>
+                <input type="text" id="partenaireNom" readonly style="background:#f5f5f5;">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📱 Téléphone</label>
+                    <input type="tel" id="partenaireTel" readonly style="background:#f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>📧 Email</label>
+                    <input type="email" id="partenaireEmail" readonly style="background:#f5f5f5;">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>📅 Historique stages</label>
+                <div id="partenaireHistorique" style="font-size:0.85rem;color:var(--gris);padding:10px;background:var(--gris-clair);border-radius:8px;">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+            
+            <hr style="margin:20px 0;border:none;border-top:1px solid #eee;">
+            
+            <div class="form-group">
+                <label>✅ Autorisation contact (RGPD) <span class="required">*</span></label>
+                <select id="partenaireAutorisation" style="padding:12px;">
+                    <option value="attente">⏳ En attente de réponse</option>
+                    <option value="oui">✅ Autorisation donnée</option>
+                    <option value="non">❌ Refusé / Ne pas contacter</option>
+                </select>
+                <div class="form-hint">Autorisation de recontacter pour mailings, taxe d'apprentissage, événements...</div>
+            </div>
+            
+            <div class="form-group">
+                <label>💬 Commentaires enseignant</label>
+                <textarea id="partenaireCommentaires" rows="4" placeholder="Notes internes : qualité de l'accueil, à recontacter, contact privilégié..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>⭐ Qualité partenaire</label>
+                <div style="display:flex;gap:5px;" id="partenaireRating">
+                    <span class="rating-star" data-value="1" onclick="setPartenaireRating(1)" style="font-size:1.5rem;cursor:pointer;color:#ddd;">★</span>
+                    <span class="rating-star" data-value="2" onclick="setPartenaireRating(2)" style="font-size:1.5rem;cursor:pointer;color:#ddd;">★</span>
+                    <span class="rating-star" data-value="3" onclick="setPartenaireRating(3)" style="font-size:1.5rem;cursor:pointer;color:#ddd;">★</span>
+                    <span class="rating-star" data-value="4" onclick="setPartenaireRating(4)" style="font-size:1.5rem;cursor:pointer;color:#ddd;">★</span>
+                    <span class="rating-star" data-value="5" onclick="setPartenaireRating(5)" style="font-size:1.5rem;cursor:pointer;color:#ddd;">★</span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalPartenaire')">Annuler</button>
+            <button class="btn btn-success" onclick="savePartenaire()">💾 Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// =============================================
+// CONFIGURATION
+// =============================================
+const DEFAULT_PASSWORD = 'PROF2026';
+const PEARLTREES_URL = 'https://www.pearltrees.com/private/id102655033?access=47af96018d7.61e6439.08abcff2f310b27abea01bd0388158ec';
+
+// Compétences EP2
+const COMPETENCES = [
+    { code: 'C1.2', label: 'Communiquer, rendre compte' },
+    { code: 'C2.1', label: 'Préparer les opérations' },
+    { code: 'C3.1', label: 'Organiser son intervention' },
+    { code: 'C3.2', label: 'Identifier les risques' },
+    { code: 'C3.3', label: 'Implanter, poser les équipements' },
+    { code: 'C3.4', label: 'Façonner, raccorder circuits' },
+    { code: 'C3.5', label: 'Poser réseaux aérauliques' },
+    { code: 'C3.6', label: 'Raccorder électrique' },
+    { code: 'C3.7', label: 'Mesures, contrôles' },
+    { code: 'C3.8', label: 'Régler régulation' },
+    { code: 'C3.9', label: 'Mise en service' }
+];
+
+// Templates de messages
+const TEMPLATES = {
+    rappel: {
+        whatsapp: `🎓 *Lycée Jacques Raynaud — Suivi de stage*
+
+Bonjour [TUTEUR_NOM],
+
+Merci d'accueillir [ELEVE_PRENOM] en stage ! 🙏
+
+Pourriez-vous valider cette semaine ?
+⏱️ 30 secondes, promis !
+
+👉 [LIEN]
+
+Merci pour votre engagement dans la formation de nos futurs professionnels ! 💪
+
+_[PROF_NOM] — Lycée Jacques Raynaud_`,
+        
+        sms: `Lycée J. Raynaud - Suivi stage [ELEVE_PRENOM]
+Merci de valider la semaine (30 sec) :
+[LIEN]
+— [PROF_NOM]`,
+        
+        email: {
+            subject: `Suivi de stage — [ELEVE_PRENOM] [ELEVE_NOM] — Semaine [SEMAINE]`,
+            body: `Bonjour [TUTEUR_NOM],
+
+Nous vous remercions d'accueillir [ELEVE_PRENOM] en stage au sein de votre entreprise.
+
+Afin d'assurer un suivi de qualité, pourriez-vous prendre 30 secondes pour valider cette semaine ?
+
+👉 Cliquez ici pour accéder au suivi :
+[LIEN]
+
+Votre retour est précieux pour la formation de nos élèves.
+
+En vous remerciant pour votre engagement dans la formation des jeunes professionnels.
+
+Bien cordialement,
+
+---
+[PROF_PRENOM] [PROF_NOM]
+Enseignant Froid & Climatisation
+Lycée Professionnel Privé Jacques Raynaud
+Campus EQUATIO — Marseille
+📧 [PROF_EMAIL]
+📞 [PROF_TEL]`
+        }
+    },
+    
+    bienvenue: {
+        whatsapp: `🎓 *Bienvenue — Stage PFMP*
+
+Bonjour [TUTEUR_NOM],
+
+Merci d'accueillir [ELEVE_PRENOM] [ELEVE_NOM] en stage ! 🙏
+
+Pour faciliter le suivi, vous recevrez un lien chaque vendredi pour valider la semaine (30 sec).
+
+En cas de problème, contactez-moi :
+📱 [PROF_TEL]
+📧 [PROF_EMAIL]
+
+Merci pour votre confiance !
+
+_[PROF_NOM] — Lycée Jacques Raynaud_`,
+        
+        email: {
+            subject: `Bienvenue à [ELEVE_PRENOM] — Stage PFMP`,
+            body: `Bonjour [TUTEUR_NOM],
+
+Nous vous remercions sincèrement d'accueillir [ELEVE_PRENOM] [ELEVE_NOM], élève en [ELEVE_CLASSE], au sein de votre entreprise.
+
+Pour faciliter le suivi pédagogique, nous avons mis en place un outil simple et rapide. Chaque vendredi, vous recevrez un lien pour valider la semaine (30 secondes).
+
+En cas de problème ou question, n'hésitez pas à me contacter directement.
+
+Merci pour votre confiance et votre engagement dans la formation de nos élèves.
+
+Bien cordialement,
+
+---
+[PROF_PRENOM] [PROF_NOM]
+Enseignant Froid & Climatisation
+Lycée Professionnel Privé Jacques Raynaud
+📧 [PROF_EMAIL]
+📞 [PROF_TEL]`
+        }
+    },
+    
+    remerciement: {
+        whatsapp: `🙏 *Merci pour l'accueil de [ELEVE_PRENOM] !*
+
+Bonjour [TUTEUR_NOM],
+
+Le stage de [ELEVE_PRENOM] s'est terminé.
+
+Je tenais à vous remercier pour votre accueil et votre implication. 🎉
+
+Votre contribution est essentielle à la formation de nos futurs professionnels.
+
+N'hésitez pas à nous recontacter pour un prochain stagiaire !
+
+_[PROF_NOM] — Lycée Jacques Raynaud_`,
+        
+        email: {
+            subject: `Merci pour l'accueil de [ELEVE_PRENOM] !`,
+            body: `Bonjour [TUTEUR_NOM],
+
+Le stage de [ELEVE_PRENOM] au sein de [ENTREPRISE] s'est terminé et je tenais à vous remercier personnellement pour votre accueil et votre implication.
+
+Votre contribution est essentielle à la formation de nos futurs professionnels du froid et de la climatisation.
+
+N'hésitez pas à nous recontacter pour un prochain stagiaire !
+
+Avec tous nos remerciements,
+
+---
+[PROF_PRENOM] [PROF_NOM]
+Lycée Professionnel Privé Jacques Raynaud`
+        }
+    },
+    
+    alerte: {
+        whatsapp: `⚠️ *Rappel PFMP*
+
+[ELEVE_PRENOM], ton tuteur va recevoir une demande de validation.
+
+✅ As-tu bien rempli ton journal cette semaine ?
+📷 As-tu pris des photos ?
+
+👉 [LIEN_ELEVE]
+
+— Lycée Jacques Raynaud`
+    }
+};
+
+// =============================================
+// DONNÉES
+// =============================================
+let config = {
+    password: 'PROF2026',
+    passwordTuteur: 'PFMP2026',
+    stageStart: '2026-01-06',
+    stageDuration: 4
+};
+
+// Équipe pédagogique (multi-profs)
+let enseignants = [
+    { id: 1, nom: 'HENNINOT', prenom: 'Franck', email: '', tel: '', actif: true }
+];
+
+let currentEnseignant = 1; // ID de l'enseignant qui envoie les messages
+
+// Base partenaires (CRM tuteurs) - enrichie depuis les élèves
+let partenaires = [];
+
+let eleves = [];
+let codes = [];
+let currentTemplate = 'rappel';
+let selectedEleve = null;
+
+// =============================================
+// INIT
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    initDropZone();
+});
+
+// =============================================
+// LOGIN
+// =============================================
+function login() {
+    const password = document.getElementById('passwordInput').value;
+    
+    if (password !== config.password) {
+        showToast('Mot de passe incorrect', 'error');
+        return;
+    }
+    
+    showScreen('appScreen');
+    renderAll();
+}
+
+function loginDemo() {
+    // Créer équipe pédagogique de démo
+    enseignants = [
+        { id: 1, nom: 'HENNINOT', prenom: 'Franck', email: 'f.henninot@formationmetier.fr', tel: '0612345678', actif: true },
+        { id: 2, nom: 'DUPUIS', prenom: 'Jean', email: 'j.dupuis@formationmetier.fr', tel: '0698765432', actif: true }
+    ];
+    currentEnseignant = 1;
+    
+    // Créer données de démo
+    eleves = [
+        {
+            code: 'ELV-001',
+            eleve: { nom: 'DUPONT', prenom: 'Martin', classe: 'CAP IFCA 1', tel: '0612345678' },
+            entreprise: { nom: 'FRIGOTECH SARL', secteur: 'Climatisation / PAC', tel: '0491000001', email: 'contact@frigotech.fr' },
+            tuteur: { nom: 'M. Bernard', fonction: 'Chef d\'équipe', tel: '0698765432', email: 'bernard@frigotech.fr', contactMode: 'whatsapp' },
+            activities: [
+                { type: 'pose', autonomy: 'observe', dayIndex: 0 },
+                { type: 'cablage', autonomy: 'aide', dayIndex: 1 },
+                { type: 'brasage', autonomy: 'observe', dayIndex: 2 },
+                { type: 'charge', autonomy: 'aide', dayIndex: 4 },
+                { type: 'mesure', autonomy: 'seul', dayIndex: 5 }
+            ],
+            tasks: [{ title: 'Installation split', status: 'complete', competences: ['C3.3', 'C3.4', 'C3.6', 'C3.9'] }],
+            tuteurEval: { skills: { pose: 2, cablage: 2, brasage: 1 }, ratings: { ponctualite: 5, motivation: 4, ecoute: 5, securite: 4, integration: 5 }, signature: true },
+            lastActivity: new Date().toISOString()
+        },
+        {
+            code: 'ELV-002',
+            eleve: { nom: 'MARTIN', prenom: 'Sophie', classe: 'CAP IFCA 1', tel: '0623456789' },
+            entreprise: { nom: 'CLIM PROVENCE', secteur: 'Climatisation / PAC', tel: '0491000002', email: 'contact@climprovence.fr' },
+            tuteur: { nom: 'Mme Durand', fonction: 'Technicienne', tel: '0687654321', email: 'durand@climprovence.fr', contactMode: 'email' },
+            activities: [
+                { type: 'pose', autonomy: 'observe', dayIndex: 0 },
+                { type: 'maintenance', autonomy: 'aide', dayIndex: 3 }
+            ],
+            tasks: [],
+            tuteurEval: null,
+            lastActivity: new Date(Date.now() - 3*24*60*60*1000).toISOString()
+        },
+        {
+            code: 'ELV-003',
+            eleve: { nom: 'PETIT', prenom: 'Lucas', classe: 'CAP IFCA 1', tel: '0634567890' },
+            entreprise: { nom: 'FRIGOTECH SARL', secteur: 'Climatisation / PAC', tel: '0491000001', email: 'contact@frigotech.fr' },
+            tuteur: { nom: 'M. Bernard', fonction: 'Chef d\'équipe', tel: '0698765432', email: 'bernard@frigotech.fr', contactMode: 'whatsapp' },
+            activities: [
+                { type: 'depannage', autonomy: 'observe', dayIndex: 1 }
+            ],
+            tasks: [],
+            tuteurEval: null,
+            lastActivity: new Date(Date.now() - 6*24*60*60*1000).toISOString()
+        },
+        {
+            code: 'ELV-004',
+            eleve: { nom: 'ROBERT', prenom: 'Emma', classe: 'CAP IFCA 2', tel: '0645678901' },
+            entreprise: { nom: 'THERMO SERVICES', secteur: 'Plomberie / Chauffage', tel: '0491000003', email: 'contact@thermo.fr' },
+            tuteur: { nom: 'M. Garcia', fonction: 'Artisan', tel: '0676543210', email: 'garcia@thermo.fr', contactMode: 'sms' },
+            activities: [],
+            tasks: [],
+            tuteurEval: null,
+            lastActivity: null
+        },
+        {
+            code: 'ELV-005',
+            eleve: { nom: 'LEROY', prenom: 'Thomas', classe: 'CAP IFCA 2', tel: '0656789012' },
+            entreprise: { nom: 'FROID EXPRESS', secteur: 'Frigoriste', tel: '0491000004', email: 'contact@froidexpress.fr' },
+            tuteur: { nom: 'M. Leroy', fonction: 'Gérant', tel: '0665432109', email: 'leroy@froidexpress.fr', contactMode: 'phone' },
+            activities: [
+                { type: 'brasage', autonomy: 'seul', dayIndex: 0 },
+                { type: 'charge', autonomy: 'seul', dayIndex: 1 },
+                { type: 'mesure', autonomy: 'seul', dayIndex: 2 },
+                { type: 'depannage', autonomy: 'aide', dayIndex: 3 },
+                { type: 'maintenance', autonomy: 'seul', dayIndex: 4 }
+            ],
+            tasks: [{ title: 'Maintenance chambre froide', status: 'validated', competences: ['C3.1', 'C3.7', 'C3.9'] }],
+            tuteurEval: { skills: { brasage: 3, charge: 3, mesure: 3 }, ratings: { ponctualite: 5, motivation: 5, ecoute: 5, securite: 5, integration: 5 }, signature: true },
+            lastActivity: new Date().toISOString()
+        }
+    ];
+    
+    codes = eleves.map(e => ({ code: e.code, nom: e.eleve.nom, prenom: e.eleve.prenom, classe: e.eleve.classe }));
+    
+    // Données partenaires de démo avec autorisations variées
+    partenaires = [
+        {
+            id: '0698765432',
+            entreprise: 'FRIGOTECH SARL',
+            secteur: 'Climatisation / PAC',
+            tuteurNom: 'M. Bernard',
+            tuteurFonction: 'Chef d\'équipe',
+            tuteurTel: '0698765432',
+            tuteurEmail: 'bernard@frigotech.fr',
+            eleves: [
+                { nom: 'DUPONT', prenom: 'Martin', classe: 'CAP IFCA 1', annee: 2026 },
+                { nom: 'PETIT', prenom: 'Lucas', classe: 'CAP IFCA 1', annee: 2026 }
+            ],
+            autorisation: 'oui',
+            commentaires: 'Excellent partenaire, très formateur. À privilégier pour les bons élèves.',
+            rating: 5,
+            dateCreation: '2025-09-01'
+        },
+        {
+            id: '0687654321',
+            entreprise: 'CLIM PROVENCE',
+            secteur: 'Climatisation / PAC',
+            tuteurNom: 'Mme Durand',
+            tuteurFonction: 'Technicienne',
+            tuteurTel: '0687654321',
+            tuteurEmail: 'durand@climprovence.fr',
+            eleves: [
+                { nom: 'MARTIN', prenom: 'Sophie', classe: 'CAP IFCA 1', annee: 2026 }
+            ],
+            autorisation: 'attente',
+            commentaires: '',
+            rating: 3,
+            dateCreation: '2026-01-06'
+        },
+        {
+            id: '0676543210',
+            entreprise: 'THERMO SERVICES',
+            secteur: 'Plomberie / Chauffage',
+            tuteurNom: 'M. Garcia',
+            tuteurFonction: 'Artisan',
+            tuteurTel: '0676543210',
+            tuteurEmail: 'garcia@thermo.fr',
+            eleves: [
+                { nom: 'ROBERT', prenom: 'Emma', classe: 'CAP IFCA 2', annee: 2026 }
+            ],
+            autorisation: 'oui',
+            commentaires: 'Artisan polyvalent, intéressé par la taxe d\'apprentissage.',
+            rating: 4,
+            dateCreation: '2025-06-15'
+        },
+        {
+            id: '0665432109',
+            entreprise: 'FROID EXPRESS',
+            secteur: 'Frigoriste',
+            tuteurNom: 'M. Leroy',
+            tuteurFonction: 'Gérant',
+            tuteurTel: '0665432109',
+            tuteurEmail: 'leroy@froidexpress.fr',
+            eleves: [
+                { nom: 'LEROY', prenom: 'Thomas', classe: 'CAP IFCA 2', annee: 2026 }
+            ],
+            autorisation: 'non',
+            commentaires: 'Ne souhaite plus être contacté pour mailings.',
+            rating: 5,
+            dateCreation: '2024-01-10'
+        }
+    ];
+    
+    saveData();
+    showScreen('appScreen');
+    renderAll();
+    showToast('🎮 Mode démo activé (5 élèves)', 'success');
+}
+
+function logout() {
+    showScreen('loginScreen');
+}
+
+// =============================================
+// ÉCRANS
+// =============================================
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+// =============================================
+// TABS
+// =============================================
+function showTab(tabId) {
+    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
+    
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + tabId)?.classList.add('active');
+    
+    // Refresh des données selon l'onglet
+    if (tabId === 'communication') renderCommunication();
+    if (tabId === 'competences') renderCompetences();
+    if (tabId === 'partenaires') renderPartenaires();
+    if (tabId === 'codes') renderCodes();
+    if (tabId === 'config') renderConfig();
+}
+
+// =============================================
+// RENDER ALL
+// =============================================
+function renderAll() {
+    renderStats();
+    renderAlerts();
+    renderDashboard();
+    renderEleves();
+    renderCommunication();
+    renderEnseignantSelector();
+    selectTemplate('rappel');
+}
+
+// =============================================
+// STATS
+// =============================================
+function renderStats() {
+    const nbEleves = eleves.length;
+    const nbActivites = eleves.reduce((sum, e) => sum + (e.activities?.length || 0), 0);
+    const nbEvals = eleves.filter(e => e.tuteurEval?.signature).length;
+    const nbAlertes = getAlerts().length;
+    
+    document.getElementById('headerStats').innerHTML = `
+        <div class="stat-card">
+            <div class="value">${nbEleves}</div>
+            <div class="label">Élèves</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">${nbActivites}</div>
+            <div class="label">Activités</div>
+        </div>
+        <div class="stat-card ${nbEvals === nbEleves ? 'success' : ''}">
+            <div class="value">${nbEvals}/${nbEleves}</div>
+            <div class="label">Évaluations</div>
+        </div>
+        <div class="stat-card ${nbAlertes > 0 ? 'alert' : 'success'}">
+            <div class="value">${nbAlertes}</div>
+            <div class="label">Alertes</div>
+        </div>
+    `;
+}
+
+// =============================================
+// ALERTS
+// =============================================
+function getAlerts() {
+    const alerts = [];
+    const now = new Date();
+    
+    eleves.forEach(e => {
+        // Aucune activité
+        if (!e.activities || e.activities.length === 0) {
+            alerts.push({
+                type: 'danger',
+                icon: '🚨',
+                title: `${e.eleve.prenom} ${e.eleve.nom}`,
+                desc: 'Aucune activité enregistrée'
+            });
+        }
+        // Peu d'activités
+        else if (e.activities.length < 3) {
+            alerts.push({
+                type: 'warning',
+                icon: '⚠️',
+                title: `${e.eleve.prenom} ${e.eleve.nom}`,
+                desc: `Seulement ${e.activities.length} activité(s)`
+            });
+        }
+        
+        // Pas d'évaluation tuteur
+        if (!e.tuteurEval?.signature) {
+            alerts.push({
+                type: 'warning',
+                icon: '📝',
+                title: `${e.eleve.prenom} ${e.eleve.nom}`,
+                desc: 'Évaluation tuteur manquante'
+            });
+        }
+        
+        // Inactif > 5 jours
+        if (e.lastActivity) {
+            const lastDate = new Date(e.lastActivity);
+            const diffDays = Math.floor((now - lastDate) / (1000 * 60 * 60 * 24));
+            if (diffDays > 5) {
+                alerts.push({
+                    type: 'warning',
+                    icon: '📅',
+                    title: `${e.eleve.prenom} ${e.eleve.nom}`,
+                    desc: `Inactif depuis ${diffDays} jours`
+                });
+            }
+        }
+    });
+    
+    return alerts;
+}
+
+function renderAlerts() {
+    const alerts = getAlerts();
+    const container = document.getElementById('alertsList');
+    
+    if (alerts.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>✅ Aucune alerte !</p></div>';
+        return;
+    }
+    
+    container.innerHTML = alerts.slice(0, 5).map(a => `
+        <div class="alert-item ${a.type === 'danger' ? '' : 'warning'}">
+            <span class="icon">${a.icon}</span>
+            <div class="content">
+                <div class="title">${a.title}</div>
+                <div class="desc">${a.desc}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// =============================================
+// DASHBOARD & ÉLÈVES
+// =============================================
+function renderDashboard() {
+    renderElevesGrid('dashboardEleves', 4);
+}
+
+function renderEleves() {
+    renderElevesGrid('elevesList', 100);
+}
+
+function renderElevesGrid(containerId, limit) {
+    const container = document.getElementById(containerId);
+    
+    if (eleves.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">👥</div><p>Aucun élève</p></div>';
+        return;
+    }
+    
+    container.innerHTML = eleves.slice(0, limit).map(e => {
+        const nbActivites = e.activities?.length || 0;
+        const hasEval = e.tuteurEval?.signature;
+        const progress = Math.min(100, nbActivites * 10);
+        
+        let status = 'ok';
+        let statusText = '✓ OK';
+        
+        if (nbActivites === 0) {
+            status = 'danger';
+            statusText = '🚨 Aucune activité';
+        } else if (!hasEval || nbActivites < 3) {
+            status = 'warning';
+            statusText = '⚠️ À surveiller';
+        }
+        
+        return `
+            <div class="eleve-card ${status}" onclick="openEleveModal('${e.code}')">
+                <div class="eleve-header">
+                    <div>
+                        <div class="eleve-name">${e.eleve.prenom} ${e.eleve.nom}</div>
+                        <div class="eleve-entreprise">${e.entreprise.nom}</div>
+                    </div>
+                    <span class="eleve-status ${status}">${statusText}</span>
+                </div>
+                <div class="eleve-stats">
+                    <span>📝 ${nbActivites} activités</span>
+                    <span>🎯 ${e.tasks?.length || 0} tâches</span>
+                    <span>${hasEval ? '✅ Évalué' : '⏳ En attente'}</span>
+                </div>
+                <div class="eleve-progress">
+                    <div class="eleve-progress-bar ${progress < 30 ? 'low' : progress < 70 ? 'medium' : 'high'}" style="width:${progress}%"></div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// =============================================
+// MODAL ÉLÈVE
+// =============================================
+function openEleveModal(code) {
+    const eleve = eleves.find(e => e.code === code);
+    if (!eleve) return;
+    
+    selectedEleve = eleve;
+    
+    document.getElementById('modalEleveTitle').textContent = `${eleve.eleve.prenom} ${eleve.eleve.nom}`;
+    
+    const compsList = [...new Set(eleve.activities?.flatMap(a => getCompetencesForActivity(a.type)) || [])];
+    
+    document.getElementById('modalEleveBody').innerHTML = `
+        <div style="margin-bottom:20px;">
+            <strong>🏢 Entreprise :</strong> ${eleve.entreprise.nom}<br>
+            <strong>👷 Tuteur :</strong> ${eleve.tuteur.nom} (${eleve.tuteur.contactMode})<br>
+            <strong>📱 Tél :</strong> ${eleve.tuteur.tel}<br>
+            <strong>📧 Email :</strong> ${eleve.tuteur.email}
+        </div>
+        
+        <div style="margin-bottom:20px;">
+            <strong>📊 Statistiques</strong><br>
+            • Activités : ${eleve.activities?.length || 0}<br>
+            • Tâches complexes : ${eleve.tasks?.length || 0}<br>
+            • Évaluation tuteur : ${eleve.tuteurEval?.signature ? '✅ Validée' : '⏳ En attente'}
+        </div>
+        
+        <div style="margin-bottom:20px;">
+            <strong>📋 Compétences observées</strong><br>
+            ${compsList.length > 0 ? compsList.map(c => `<span style="display:inline-block;background:#e0e0e0;padding:2px 8px;border-radius:10px;font-size:0.75rem;margin:2px;">${c}</span>`).join('') : 'Aucune'}
+        </div>
+        
+        ${eleve.tuteurEval ? `
+            <div>
+                <strong>⭐ Évaluation comportement</strong><br>
+                • Ponctualité : ${'★'.repeat(eleve.tuteurEval.ratings?.ponctualite || 0)}<br>
+                • Motivation : ${'★'.repeat(eleve.tuteurEval.ratings?.motivation || 0)}<br>
+                • Écoute : ${'★'.repeat(eleve.tuteurEval.ratings?.ecoute || 0)}<br>
+                • Sécurité : ${'★'.repeat(eleve.tuteurEval.ratings?.securite || 0)}<br>
+                • Intégration : ${'★'.repeat(eleve.tuteurEval.ratings?.integration || 0)}
+            </div>
+        ` : ''}
+    `;
+    
+    document.getElementById('modalEleve').classList.add('active');
+}
+
+function getCompetencesForActivity(type) {
+    const mapping = {
+        pose: ['C3.1', 'C3.3'],
+        cablage: ['C3.6'],
+        brasage: ['C3.4'],
+        charge: ['C3.9'],
+        mesure: ['C3.7'],
+        maintenance: ['C3.1', 'C3.7'],
+        depannage: ['C3.2', 'C3.7'],
+        faconnage: ['C3.4'],
+        aeraulique: ['C3.5'],
+        regulation: ['C3.8']
+    };
+    return mapping[type] || [];
+}
+
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function generateSynthese() {
+    showToast('Génération PDF à venir...', 'error');
+}
+
+// =============================================
+// COMMUNICATION
+// =============================================
+function renderCommunication() {
+    renderEnseignantSelector();
+    renderTuteurs();
+    renderElevesNotif();
+}
+
+function renderTuteurs() {
+    // Grouper par tuteur
+    const tuteurs = {};
+    eleves.forEach(e => {
+        const key = e.tuteur.tel || e.tuteur.email;
+        if (!tuteurs[key]) {
+            tuteurs[key] = {
+                ...e.tuteur,
+                entreprise: e.entreprise.nom,
+                eleves: []
+            };
+        }
+        tuteurs[key].eleves.push(e);
+    });
+    
+    const container = document.getElementById('tuteursList');
+    
+    if (Object.keys(tuteurs).length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Aucun tuteur</p></div>';
+        return;
+    }
+    
+    container.innerHTML = Object.values(tuteurs).map((t, i) => `
+        <div class="tuteur-card" data-tuteur="${i}">
+            <div class="tuteur-header">
+                <div class="tuteur-header-top">
+                    <div>
+                        <div class="tuteur-name">${t.nom}</div>
+                        <div class="tuteur-entreprise">${t.entreprise}</div>
+                    </div>
+                </div>
+                <div class="tuteur-eleves">👨‍🎓 ${t.eleves.map(e => e.eleve.prenom).join(', ')}</div>
+                <div class="tuteur-contacts">
+                    ${t.tel ? `<span class="tuteur-contact">📱 ${t.tel}</span>` : ''}
+                    ${t.email ? `<span class="tuteur-contact">📧 ${t.email}</span>` : ''}
+                </div>
+            </div>
+            <div class="tuteur-body">
+                <div class="channel-options">
+                    <label class="channel-option ${t.tel ? '' : 'disabled'}" data-channel="whatsapp">
+                        <input type="checkbox" ${t.contactMode === 'whatsapp' ? 'checked' : ''} ${t.tel ? '' : 'disabled'}>
+                        <span class="icon">💬</span>
+                        <span class="label">WhatsApp</span>
+                    </label>
+                    <label class="channel-option ${t.tel ? '' : 'disabled'}" data-channel="sms">
+                        <input type="checkbox" ${t.contactMode === 'sms' ? 'checked' : ''} ${t.tel ? '' : 'disabled'}>
+                        <span class="icon">📱</span>
+                        <span class="label">SMS</span>
+                    </label>
+                    <label class="channel-option ${t.email ? '' : 'disabled'}" data-channel="email">
+                        <input type="checkbox" ${t.contactMode === 'email' ? 'checked' : ''} ${t.email ? '' : 'disabled'}>
+                        <span class="icon">📧</span>
+                        <span class="label">Email</span>
+                    </label>
+                </div>
+                <div class="tuteur-actions">
+                    <button class="btn btn-sm btn-primary" onclick="sendToTuteur(${i})">📤 Envoyer</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderElevesNotif() {
+    const container = document.getElementById('elevesNotifList');
+    
+    container.innerHTML = eleves.map(e => `
+        <label style="display:flex;align-items:center;gap:10px;padding:8px 0;">
+            <input type="checkbox" checked data-eleve="${e.code}">
+            <span>${e.eleve.prenom} ${e.eleve.nom} — 📱 ${e.eleve.tel || 'Non renseigné'}</span>
+        </label>
+    `).join('');
+}
+
+// =============================================
+// TEMPLATES
+// =============================================
+function selectTemplate(type) {
+    currentTemplate = type;
+    
+    document.querySelectorAll('.template-tab').forEach(t => t.classList.remove('active'));
+    event?.target?.classList.add('active');
+    
+    const template = TEMPLATES[type];
+    const prof = getCurrentEnseignant();
+    let preview = template.whatsapp || template.email?.body || '';
+    
+    // Remplacer les variables par des exemples
+    preview = preview
+        .replace(/\[TUTEUR_NOM\]/g, '<span class="var">M. Bernard</span>')
+        .replace(/\[ELEVE_PRENOM\]/g, '<span class="var">Martin</span>')
+        .replace(/\[ELEVE_NOM\]/g, '<span class="var">DUPONT</span>')
+        .replace(/\[ELEVE_CLASSE\]/g, '<span class="var">CAP IFCA 1</span>')
+        .replace(/\[ENTREPRISE\]/g, '<span class="var">FRIGOTECH</span>')
+        .replace(/\[PROF_NOM\]/g, `<span class="var">${prof.nom}</span>`)
+        .replace(/\[PROF_PRENOM\]/g, `<span class="var">${prof.prenom}</span>`)
+        .replace(/\[PROF_EMAIL\]/g, `<span class="var">${prof.email || 'email@...'}</span>`)
+        .replace(/\[PROF_TEL\]/g, `<span class="var">${prof.tel || '06...'}</span>`)
+        .replace(/\[LIEN\]/g, '<span class="var">https://frigorx.github.io/PFMP/...</span>')
+        .replace(/\[LIEN_ELEVE\]/g, '<span class="var">https://frigorx.github.io/PFMP/...</span>')
+        .replace(/\[SEMAINE\]/g, '<span class="var">3</span>');
+    
+    document.getElementById('templatePreview').innerHTML = preview;
+}
+
+// =============================================
+// ENVOI
+// =============================================
+function sendToTuteur(index) {
+    // Récupérer tuteur
+    const tuteurs = {};
+    eleves.forEach(e => {
+        const key = e.tuteur.tel || e.tuteur.email;
+        if (!tuteurs[key]) {
+            tuteurs[key] = { ...e.tuteur, entreprise: e.entreprise.nom, eleves: [] };
+        }
+        tuteurs[key].eleves.push(e);
+    });
+    
+    const tuteur = Object.values(tuteurs)[index];
+    if (!tuteur) return;
+    
+    const card = document.querySelectorAll('.tuteur-card')[index];
+    const channels = [];
+    card.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        channels.push(cb.closest('.channel-option').dataset.channel);
+    });
+    
+    if (channels.length === 0) {
+        showToast('Sélectionnez au moins un canal', 'error');
+        return;
+    }
+    
+    // Préparer message
+    const eleve = tuteur.eleves[0];
+    const template = TEMPLATES[currentTemplate];
+    
+    channels.forEach(channel => {
+        if (channel === 'whatsapp' && tuteur.tel) {
+            const msg = prepareMessage(template.whatsapp, tuteur, eleve);
+            const tel = tuteur.tel.replace(/^0/, '33').replace(/\s/g, '');
+            window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+        
+        if (channel === 'sms' && tuteur.tel) {
+            const msg = prepareMessage(template.sms || template.whatsapp, tuteur, eleve);
+            window.open(`sms:${tuteur.tel}?body=${encodeURIComponent(msg)}`, '_blank');
+        }
+        
+        if (channel === 'email' && tuteur.email && template.email) {
+            const subject = prepareMessage(template.email.subject, tuteur, eleve);
+            const body = prepareMessage(template.email.body, tuteur, eleve);
+            window.open(`mailto:${tuteur.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+        }
+    });
+    
+    showToast('Message(s) préparé(s) !', 'success');
+}
+
+function prepareMessage(template, tuteur, eleve) {
+    const prof = getCurrentEnseignant();
+    return template
+        .replace(/\[TUTEUR_NOM\]/g, tuteur.nom)
+        .replace(/\[ELEVE_PRENOM\]/g, eleve.eleve.prenom)
+        .replace(/\[ELEVE_NOM\]/g, eleve.eleve.nom)
+        .replace(/\[ELEVE_CLASSE\]/g, eleve.eleve.classe)
+        .replace(/\[ENTREPRISE\]/g, eleve.entreprise.nom)
+        .replace(/\[PROF_NOM\]/g, prof.nom)
+        .replace(/\[PROF_PRENOM\]/g, prof.prenom)
+        .replace(/\[PROF_EMAIL\]/g, prof.email || '')
+        .replace(/\[PROF_TEL\]/g, prof.tel || '')
+        .replace(/\[LIEN\]/g, `https://frigorx.github.io/PFMP/pfmp_tuteur_v3.html?code=${eleve.code}`)
+        .replace(/\[LIEN_ELEVE\]/g, `https://frigorx.github.io/PFMP/pfmp_eleve_v3.html`)
+        .replace(/\[SEMAINE\]/g, getWeekNumber());
+}
+
+function getWeekNumber() {
+    const start = new Date(config.stageStart);
+    const now = new Date();
+    return Math.ceil((now - start) / (7 * 24 * 60 * 60 * 1000));
+}
+
+function sendAllReminders() {
+    showToast('Ouverture des messages...', 'success');
+    
+    // Envoyer à tous les tuteurs
+    document.querySelectorAll('.tuteur-card').forEach((card, i) => {
+        setTimeout(() => sendToTuteur(i), i * 500);
+    });
+}
+
+// =============================================
+// EXPORT VCF
+// =============================================
+function exportVCF() {
+    const tuteurs = {};
+    eleves.forEach(e => {
+        if (e.tuteur.tel && e.tuteur.contactMode === 'whatsapp') {
+            const key = e.tuteur.tel;
+            if (!tuteurs[key]) {
+                tuteurs[key] = {
+                    ...e.tuteur,
+                    eleves: []
+                };
+            }
+            tuteurs[key].eleves.push(e.eleve.prenom);
+        }
+    });
+    
+    let vcf = '';
+    Object.values(tuteurs).forEach(t => {
+        const tel = t.tel.replace(/^0/, '+33').replace(/\s/g, '');
+        vcf += `BEGIN:VCARD
+VERSION:3.0
+FN:PFMP - ${t.nom} (${t.eleves.join(', ')})
+TEL:${tel}
+NOTE:Tuteur stage ${t.eleves.join(', ')}
+END:VCARD
+`;
+    });
+    
+    const blob = new Blob([vcf], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'PFMP_Tuteurs_WhatsApp.vcf';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast(`📥 ${Object.keys(tuteurs).length} contacts exportés`, 'success');
+}
+
+// =============================================
+// COMPÉTENCES
+// =============================================
+function renderCompetences() {
+    const compStats = {};
+    COMPETENCES.forEach(c => compStats[c.code] = { total: 0, observed: 0 });
+    
+    eleves.forEach(e => {
+        const comps = new Set();
+        e.activities?.forEach(a => {
+            getCompetencesForActivity(a.type).forEach(c => comps.add(c));
+        });
+        e.tasks?.forEach(t => {
+            t.competences?.forEach(c => comps.add(c));
+        });
+        
+        COMPETENCES.forEach(c => {
+            compStats[c.code].total++;
+            if (comps.has(c.code)) compStats[c.code].observed++;
+        });
+    });
+    
+    const container = document.getElementById('competencesTable');
+    container.innerHTML = `
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Compétence</th>
+                <th>Couverture</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${COMPETENCES.map(c => {
+                const stat = compStats[c.code];
+                const pct = stat.total > 0 ? Math.round(stat.observed / stat.total * 100) : 0;
+                return `
+                    <tr>
+                        <td><strong>${c.code}</strong></td>
+                        <td>${c.label}</td>
+                        <td>
+                            <div class="comp-progress">
+                                <div class="comp-bar">
+                                    <div class="comp-bar-fill ${pct < 40 ? 'low' : pct < 70 ? 'medium' : 'high'}" style="width:${pct}%"></div>
+                                </div>
+                                <span>${pct}%</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('')}
+        </tbody>
+    `;
+}
+
+// =============================================
+// PARTENAIRES (CRM)
+// =============================================
+function buildPartenaires() {
+    // Construire la base partenaires depuis les élèves
+    const tuteursMap = {};
+    
+    eleves.forEach(e => {
+        if (!e.tuteur || !e.tuteur.tel) return;
+        
+        const key = e.tuteur.tel.replace(/\s/g, '');
+        
+        if (!tuteursMap[key]) {
+            tuteursMap[key] = {
+                id: key,
+                entreprise: e.entreprise.nom,
+                secteur: e.entreprise.secteur,
+                entrepriseTel: e.entreprise.tel,
+                entrepriseEmail: e.entreprise.email,
+                tuteurNom: e.tuteur.nom,
+                tuteurFonction: e.tuteur.fonction,
+                tuteurTel: e.tuteur.tel,
+                tuteurEmail: e.tuteur.email,
+                eleves: [],
+                // Données CRM (enrichies par l'enseignant)
+                autorisation: 'attente', // 'oui', 'non', 'attente'
+                commentaires: '',
+                rating: 0,
+                dateCreation: new Date().toISOString()
+            };
+        }
+        
+        tuteursMap[key].eleves.push({
+            nom: e.eleve.nom,
+            prenom: e.eleve.prenom,
+            classe: e.eleve.classe,
+            annee: new Date().getFullYear()
+        });
+    });
+    
+    // Fusionner avec partenaires existants (pour garder les données CRM)
+    Object.values(tuteursMap).forEach(newP => {
+        const existing = partenaires.find(p => p.id === newP.id);
+        if (existing) {
+            // Mettre à jour infos de base, garder données CRM
+            existing.entreprise = newP.entreprise;
+            existing.secteur = newP.secteur;
+            existing.tuteurNom = newP.tuteurNom;
+            existing.tuteurEmail = newP.tuteurEmail;
+            // Ajouter nouveaux élèves sans doublons
+            newP.eleves.forEach(ne => {
+                if (!existing.eleves.find(ee => ee.nom === ne.nom && ee.prenom === ne.prenom)) {
+                    existing.eleves.push(ne);
+                }
+            });
+        } else {
+            partenaires.push(newP);
+        }
+    });
+}
+
+function renderPartenaires() {
+    buildPartenaires();
+    
+    const container = document.getElementById('partenairesList');
+    const filterSecteur = document.getElementById('filterSecteur').value;
+    const filterAutorisation = document.getElementById('filterAutorisation').value;
+    
+    let filtered = partenaires;
+    
+    if (filterSecteur) {
+        filtered = filtered.filter(p => p.secteur === filterSecteur);
+    }
+    
+    if (filterAutorisation) {
+        filtered = filtered.filter(p => p.autorisation === filterAutorisation);
+    }
+    
+    document.getElementById('partenairesCount').textContent = `${filtered.length} partenaire(s)`;
+    
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="icon">🏢</div><p>Aucun partenaire</p></div>';
+        return;
+    }
+    
+    container.innerHTML = filtered.map(p => {
+        const autoIcon = p.autorisation === 'oui' ? '✅' : p.autorisation === 'non' ? '❌' : '⏳';
+        const stars = '★'.repeat(p.rating) + '☆'.repeat(5 - p.rating);
+        
+        return `
+            <div class="tuteur-card" style="cursor:pointer;" onclick="openPartenaireModal('${p.id}')">
+                <div class="tuteur-header">
+                    <div class="tuteur-header-top">
+                        <div>
+                            <div class="tuteur-name">${p.entreprise}</div>
+                            <div class="tuteur-entreprise">${p.secteur || 'Non défini'}</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <span style="font-size:1.2rem;">${autoIcon}</span>
+                            <div style="font-size:0.7rem;color:var(--jaune);">${stars}</div>
+                        </div>
+                    </div>
+                    <div class="tuteur-eleves">👷 ${p.tuteurNom} ${p.tuteurFonction ? '— ' + p.tuteurFonction : ''}</div>
+                    <div class="tuteur-contacts">
+                        ${p.tuteurTel ? `<span class="tuteur-contact">📱 ${p.tuteurTel}</span>` : ''}
+                        ${p.tuteurEmail ? `<span class="tuteur-contact">📧 ${p.tuteurEmail}</span>` : ''}
+                    </div>
+                </div>
+                <div class="tuteur-body" style="padding:10px 15px;background:white;">
+                    <div style="font-size:0.75rem;color:var(--gris);">
+                        👨‍🎓 ${p.eleves.length} stagiaire(s) : ${p.eleves.map(e => e.prenom).join(', ')}
+                    </div>
+                    ${p.commentaires ? `<div style="font-size:0.75rem;color:var(--bleu);margin-top:5px;font-style:italic;">"${p.commentaires.substring(0, 50)}${p.commentaires.length > 50 ? '...' : ''}"</div>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+let currentPartenaireRating = 0;
+
+function openPartenaireModal(id) {
+    const p = partenaires.find(x => x.id === id);
+    if (!p) return;
+    
+    document.getElementById('partenaireId').value = p.id;
+    document.getElementById('partenaireEntreprise').textContent = p.entreprise;
+    document.getElementById('partenaireSecteur').textContent = p.secteur || 'Secteur non défini';
+    document.getElementById('partenaireNom').value = p.tuteurNom;
+    document.getElementById('partenaireTel').value = p.tuteurTel || '';
+    document.getElementById('partenaireEmail').value = p.tuteurEmail || '';
+    document.getElementById('partenaireAutorisation').value = p.autorisation || 'attente';
+    document.getElementById('partenaireCommentaires').value = p.commentaires || '';
+    
+    // Historique
+    document.getElementById('partenaireHistorique').innerHTML = p.eleves.map(e => 
+        `• ${e.prenom} ${e.nom} (${e.classe}) — ${e.annee}`
+    ).join('<br>') || 'Aucun historique';
+    
+    // Rating
+    currentPartenaireRating = p.rating || 0;
+    updatePartenaireRatingDisplay();
+    
+    document.getElementById('modalPartenaire').classList.add('active');
+}
+
+function setPartenaireRating(value) {
+    currentPartenaireRating = value;
+    updatePartenaireRatingDisplay();
+}
+
+function updatePartenaireRatingDisplay() {
+    document.querySelectorAll('#partenaireRating .rating-star').forEach((star, index) => {
+        star.style.color = index < currentPartenaireRating ? 'var(--jaune)' : '#ddd';
+    });
+}
+
+function savePartenaire() {
+    const id = document.getElementById('partenaireId').value;
+    const p = partenaires.find(x => x.id === id);
+    if (!p) return;
+    
+    p.autorisation = document.getElementById('partenaireAutorisation').value;
+    p.commentaires = document.getElementById('partenaireCommentaires').value.trim();
+    p.rating = currentPartenaireRating;
+    
+    saveData();
+    closeModal('modalPartenaire');
+    renderPartenaires();
+    showToast('✅ Partenaire mis à jour', 'success');
+}
+
+function getAuthorizedPartenaires() {
+    buildPartenaires();
+    return partenaires.filter(p => p.autorisation === 'oui' && p.tuteurEmail);
+}
+
+function exportMailingCSV() {
+    const authorized = getAuthorizedPartenaires();
+    
+    if (authorized.length === 0) {
+        showToast('Aucun partenaire avec autorisation', 'error');
+        return;
+    }
+    
+    let csv = 'Entreprise;Secteur;Tuteur;Email;Téléphone;Commentaires\n';
+    authorized.forEach(p => {
+        csv += `"${p.entreprise}";"${p.secteur}";"${p.tuteurNom}";"${p.tuteurEmail}";"${p.tuteurTel}";"${p.commentaires}"\n`;
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Partenaires_Mailing_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast(`📧 ${authorized.length} contacts exportés`, 'success');
+}
+
+function exportMailingVCF() {
+    const authorized = partenaires.filter(p => p.autorisation === 'oui' && p.tuteurTel);
+    
+    if (authorized.length === 0) {
+        showToast('Aucun partenaire avec autorisation', 'error');
+        return;
+    }
+    
+    let vcf = '';
+    authorized.forEach(p => {
+        const tel = p.tuteurTel.replace(/^0/, '+33').replace(/\s/g, '');
+        vcf += `BEGIN:VCARD
+VERSION:3.0
+FN:${p.tuteurNom} - ${p.entreprise}
+ORG:${p.entreprise}
+TEL:${tel}
+${p.tuteurEmail ? 'EMAIL:' + p.tuteurEmail : ''}
+NOTE:Partenaire PFMP - ${p.secteur}
+END:VCARD
+`;
+    });
+    
+    const blob = new Blob([vcf], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Partenaires_WhatsApp.vcf';
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast(`📱 ${authorized.length} contacts exportés`, 'success');
+}
+
+function copyEmailsToClipboard() {
+    const authorized = getAuthorizedPartenaires();
+    
+    if (authorized.length === 0) {
+        showToast('Aucun partenaire avec autorisation', 'error');
+        return;
+    }
+    
+    const emails = authorized.map(p => p.tuteurEmail).join('; ');
+    
+    navigator.clipboard.writeText(emails).then(() => {
+        showToast(`📋 ${authorized.length} emails copiés`, 'success');
+    }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = emails;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast(`📋 ${authorized.length} emails copiés`, 'success');
+    });
+}
+
+function openMailingClient() {
+    const authorized = getAuthorizedPartenaires();
+    
+    if (authorized.length === 0) {
+        showToast('Aucun partenaire avec autorisation', 'error');
+        return;
+    }
+    
+    const emails = authorized.map(p => p.tuteurEmail).join(',');
+    const subject = document.getElementById('mailingSubject').value || 'Lycée Jacques Raynaud';
+    const body = document.getElementById('mailingBody').value || '';
+    
+    window.open(`mailto:${emails}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
+    
+    showToast(`📧 Ouverture messagerie (${authorized.length} destinataires)`, 'success');
+}
+
+// =============================================
+// IMPORT
+// =============================================
+function initDropZone() {
+    const dropZone = document.getElementById('dropZone');
+    if (!dropZone) return;
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+}
+
+function handleFileSelect(event) {
+    handleFiles(event.target.files);
+}
+
+function handleFiles(files) {
+    const results = [];
+    
+    Array.from(files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = JSON.parse(e.target.result);
+                const result = importData(data);
+                results.push({ file: file.name, ...result });
+                renderImportResults(results);
+            } catch (err) {
+                results.push({ file: file.name, success: false, message: 'Fichier invalide' });
+                renderImportResults(results);
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
+function importData(data) {
+    if (data.type === 'pfmp_eleve') {
+        // Import données élève
+        const existing = eleves.find(e => e.code === data.code);
+        if (existing) {
+            Object.assign(existing, {
+                eleve: data.eleve,
+                entreprise: data.entreprise,
+                tuteur: data.tuteur,
+                activities: data.activities,
+                tasks: data.tasks,
+                lastActivity: data.activities?.length > 0 ? new Date().toISOString() : existing.lastActivity
+            });
+        } else {
+            eleves.push({
+                code: data.code,
+                eleve: data.eleve,
+                entreprise: data.entreprise,
+                tuteur: data.tuteur,
+                activities: data.activities || [],
+                tasks: data.tasks || [],
+                tuteurEval: null,
+                lastActivity: new Date().toISOString()
+            });
+            codes.push({ code: data.code, nom: data.eleve.nom, prenom: data.eleve.prenom, classe: data.eleve.classe });
+        }
+        saveData();
+        renderAll();
+        return { success: true, message: `Élève ${data.eleve?.prenom} importé` };
+    }
+    
+    if (data.type === 'pfmp_tuteur') {
+        // Import évaluation tuteur
+        const eleve = eleves.find(e => e.code === data.codeEleve);
+        if (eleve) {
+            eleve.tuteurEval = {
+                skills: data.skills,
+                competences: data.competences,
+                ratings: data.ratings,
+                signature: data.signature,
+                commentaire: data.commentaire
+            };
+            saveData();
+            renderAll();
+            return { success: true, message: `Évaluation tuteur importée pour ${eleve.eleve?.prenom}` };
+        }
+        return { success: false, message: 'Élève non trouvé' };
+    }
+    
+    return { success: false, message: 'Type de fichier non reconnu' };
+}
+
+function renderImportResults(results) {
+    const container = document.getElementById('importResults');
+    container.style.display = 'block';
+    container.innerHTML = results.map(r => `
+        <div class="import-result ${r.success ? 'success' : 'error'}">
+            ${r.success ? '✅' : '❌'} ${r.file} — ${r.message}
+        </div>
+    `).join('');
+}
+
+// =============================================
+// CODES
+// =============================================
+function renderCodes() {
+    const container = document.getElementById('codesList');
+    
+    if (codes.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Aucun code généré</p></div>';
+        return;
+    }
+    
+    container.innerHTML = codes.map(c => `
+        <div class="code-item">
+            <div class="info">
+                <div class="name">${c.prenom} ${c.nom}</div>
+                <div class="code">${c.code}</div>
+            </div>
+            <button class="delete" onclick="deleteCode('${c.code}')">🗑️</button>
+        </div>
+    `).join('');
+}
+
+function addCode() {
+    const nom = document.getElementById('newNom').value.trim().toUpperCase();
+    const prenom = document.getElementById('newPrenom').value.trim();
+    const classe = document.getElementById('newClasse').value;
+    
+    if (!nom || !prenom) {
+        showToast('Remplis le nom et prénom', 'error');
+        return;
+    }
+    
+    const code = 'ELV-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    codes.push({ code, nom, prenom, classe });
+    eleves.push({
+        code,
+        eleve: { nom, prenom, classe, tel: '' },
+        entreprise: { nom: '', secteur: '', tel: '', email: '' },
+        tuteur: { nom: '', fonction: '', tel: '', email: '', contactMode: 'whatsapp' },
+        activities: [],
+        tasks: [],
+        tuteurEval: null,
+        lastActivity: null
+    });
+    
+    saveData();
+    renderCodes();
+    renderAll();
+    
+    document.getElementById('newNom').value = '';
+    document.getElementById('newPrenom').value = '';
+    
+    showToast(`✅ Code généré : ${code}`, 'success');
+}
+
+function deleteCode(code) {
+    if (!confirm('Supprimer cet élève ?')) return;
+    
+    codes = codes.filter(c => c.code !== code);
+    eleves = eleves.filter(e => e.code !== code);
+    
+    saveData();
+    renderCodes();
+    renderAll();
+    
+    showToast('Élève supprimé', 'success');
+}
+
+function printCodes() {
+    const win = window.open('', '_blank');
+    win.document.write(`
+        <html>
+        <head>
+            <title>Codes PFMP</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; }
+                .code-card { border: 2px solid #1b3a63; padding: 20px; margin: 10px; display: inline-block; width: 250px; text-align: center; }
+                .code { font-family: monospace; font-size: 1.5rem; font-weight: bold; color: #1b3a63; }
+                .name { font-size: 1rem; margin-bottom: 10px; }
+                .url { font-size: 0.7rem; color: #666; }
+            </style>
+        </head>
+        <body>
+            <h1>Codes d'accès PFMP Stage</h1>
+            ${codes.map(c => `
+                <div class="code-card">
+                    <div class="name">${c.prenom} ${c.nom}</div>
+                    <div class="code">${c.code}</div>
+                    <div class="url">https://frigorx.github.io/PFMP/pfmp_eleve_v3.html</div>
+                </div>
+            `).join('')}
+        </body>
+        </html>
+    `);
+    win.document.close();
+    win.print();
+}
+
+// =============================================
+// CONFIG & ENSEIGNANTS
+// =============================================
+function renderConfig() {
+    document.getElementById('configPassword').value = config.password;
+    document.getElementById('configPasswordTuteur').value = config.passwordTuteur;
+    document.getElementById('configStageStart').value = config.stageStart;
+    document.getElementById('configStageDuration').value = config.stageDuration;
+    
+    renderEnseignants();
+}
+
+function renderEnseignants() {
+    const container = document.getElementById('enseignantsList');
+    
+    if (enseignants.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>Aucun enseignant</p></div>';
+        return;
+    }
+    
+    container.innerHTML = enseignants.map(e => `
+        <div class="enseignant-card" style="margin-bottom:10px;">
+            <div class="enseignant-avatar">${e.prenom.charAt(0)}${e.nom.charAt(0)}</div>
+            <div class="enseignant-info" style="flex:1;">
+                <div class="enseignant-name">${e.prenom} ${e.nom}</div>
+                <div class="enseignant-contact">
+                    ${e.email ? '📧 ' + e.email : ''}
+                    ${e.email && e.tel ? ' — ' : ''}
+                    ${e.tel ? '📱 ' + e.tel : ''}
+                    ${!e.email && !e.tel ? '<em style="color:#999;">Coordonnées non renseignées</em>' : ''}
+                </div>
+            </div>
+            <div style="display:flex;gap:5px;">
+                <button class="btn btn-sm btn-outline" onclick="editEnseignant(${e.id})">✏️</button>
+                ${enseignants.length > 1 ? `<button class="btn btn-sm btn-outline" style="border-color:var(--rouge);color:var(--rouge);" onclick="deleteEnseignant(${e.id})">🗑️</button>` : ''}
+            </div>
+        </div>
+    `).join('');
+}
+
+function renderEnseignantSelector() {
+    const container = document.getElementById('enseignantSelector');
+    if (!container) return;
+    
+    container.innerHTML = enseignants.map(e => `
+        <label class="channel-option ${currentEnseignant === e.id ? 'selected' : ''}" onclick="selectEnseignant(${e.id})">
+            <input type="radio" name="enseignant" ${currentEnseignant === e.id ? 'checked' : ''} style="display:none;">
+            <span class="icon">👨‍🏫</span>
+            <span class="label">${e.prenom} ${e.nom.charAt(0)}.</span>
+        </label>
+    `).join('');
+}
+
+function selectEnseignant(id) {
+    currentEnseignant = id;
+    renderEnseignantSelector();
+    showToast(`Messages signés par ${getEnseignantById(id).prenom}`, 'success');
+}
+
+function getEnseignantById(id) {
+    return enseignants.find(e => e.id === id) || enseignants[0];
+}
+
+function getCurrentEnseignant() {
+    return getEnseignantById(currentEnseignant);
+}
+
+function openAddEnseignant() {
+    document.getElementById('modalEnseignantTitle').textContent = 'Ajouter un enseignant';
+    document.getElementById('enseignantId').value = '';
+    document.getElementById('enseignantNom').value = '';
+    document.getElementById('enseignantPrenom').value = '';
+    document.getElementById('enseignantEmail').value = '';
+    document.getElementById('enseignantTel').value = '';
+    document.getElementById('modalEnseignant').classList.add('active');
+}
+
+function editEnseignant(id) {
+    const e = getEnseignantById(id);
+    document.getElementById('modalEnseignantTitle').textContent = 'Modifier l\'enseignant';
+    document.getElementById('enseignantId').value = e.id;
+    document.getElementById('enseignantNom').value = e.nom;
+    document.getElementById('enseignantPrenom').value = e.prenom;
+    document.getElementById('enseignantEmail').value = e.email || '';
+    document.getElementById('enseignantTel').value = e.tel || '';
+    document.getElementById('modalEnseignant').classList.add('active');
+}
+
+function saveEnseignant() {
+    const nom = document.getElementById('enseignantNom').value.trim().toUpperCase();
+    const prenom = document.getElementById('enseignantPrenom').value.trim();
+    const email = document.getElementById('enseignantEmail').value.trim();
+    const tel = document.getElementById('enseignantTel').value.trim();
+    const id = document.getElementById('enseignantId').value;
+    
+    if (!nom || !prenom) {
+        showToast('Remplissez le nom et prénom', 'error');
+        return;
+    }
+    
+    if (id) {
+        // Modification
+        const e = getEnseignantById(parseInt(id));
+        e.nom = nom;
+        e.prenom = prenom;
+        e.email = email;
+        e.tel = tel;
+    } else {
+        // Ajout
+        const newId = Math.max(...enseignants.map(e => e.id), 0) + 1;
+        enseignants.push({ id: newId, nom, prenom, email, tel, actif: true });
+    }
+    
+    saveData();
+    closeModal('modalEnseignant');
+    renderEnseignants();
+    renderEnseignantSelector();
+    showToast('✅ Enseignant enregistré', 'success');
+}
+
+function deleteEnseignant(id) {
+    if (enseignants.length <= 1) {
+        showToast('Il faut au moins un enseignant', 'error');
+        return;
+    }
+    
+    if (!confirm('Supprimer cet enseignant ?')) return;
+    
+    enseignants = enseignants.filter(e => e.id !== id);
+    
+    // Si c'était l'enseignant courant, sélectionner le premier
+    if (currentEnseignant === id) {
+        currentEnseignant = enseignants[0].id;
+    }
+    
+    saveData();
+    renderEnseignants();
+    renderEnseignantSelector();
+    showToast('Enseignant supprimé', 'success');
+}
+
+function saveConfig() {
+    config.password = document.getElementById('configPassword').value || 'PROF2026';
+    config.passwordTuteur = document.getElementById('configPasswordTuteur').value || 'PFMP2026';
+    config.stageStart = document.getElementById('configStageStart').value;
+    config.stageDuration = parseInt(document.getElementById('configStageDuration').value);
+    
+    saveData();
+    showToast('Configuration enregistrée', 'success');
+}
+
+// =============================================
+// STORAGE
+// =============================================
+function loadData() {
+    const savedConfig = localStorage.getItem('pfmp_prof_config');
+    if (savedConfig) config = JSON.parse(savedConfig);
+    
+    const savedEnseignants = localStorage.getItem('pfmp_prof_enseignants');
+    if (savedEnseignants) enseignants = JSON.parse(savedEnseignants);
+    
+    const savedCurrentEnseignant = localStorage.getItem('pfmp_prof_current_enseignant');
+    if (savedCurrentEnseignant) currentEnseignant = parseInt(savedCurrentEnseignant);
+    
+    const savedEleves = localStorage.getItem('pfmp_prof_eleves');
+    if (savedEleves) eleves = JSON.parse(savedEleves);
+    
+    const savedCodes = localStorage.getItem('pfmp_prof_codes');
+    if (savedCodes) codes = JSON.parse(savedCodes);
+    
+    const savedPartenaires = localStorage.getItem('pfmp_prof_partenaires');
+    if (savedPartenaires) partenaires = JSON.parse(savedPartenaires);
+}
+
+function saveData() {
+    localStorage.setItem('pfmp_prof_config', JSON.stringify(config));
+    localStorage.setItem('pfmp_prof_enseignants', JSON.stringify(enseignants));
+    localStorage.setItem('pfmp_prof_current_enseignant', currentEnseignant.toString());
+    localStorage.setItem('pfmp_prof_eleves', JSON.stringify(eleves));
+    localStorage.setItem('pfmp_prof_codes', JSON.stringify(codes));
+    localStorage.setItem('pfmp_prof_partenaires', JSON.stringify(partenaires));
+}
+
+function exportAllData() {
+    const exportData = {
+        version: '3.0',
+        type: 'pfmp_backup',
+        exportDate: new Date().toISOString(),
+        config,
+        enseignants,
+        currentEnseignant,
+        eleves,
+        codes,
+        partenaires
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `PFMP_Backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('💾 Sauvegarde téléchargée', 'success');
+}
+
+function restoreData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.type === 'pfmp_backup') {
+                config = data.config;
+                enseignants = data.enseignants || [{ id: 1, nom: 'PROF', prenom: 'Utilisateur', email: '', tel: '', actif: true }];
+                currentEnseignant = data.currentEnseignant || enseignants[0].id;
+                eleves = data.eleves;
+                codes = data.codes;
+                partenaires = data.partenaires || [];
+                saveData();
+                renderAll();
+                showToast('✅ Données restaurées', 'success');
+            } else {
+                showToast('Fichier invalide', 'error');
+            }
+        } catch (err) {
+            showToast('Erreur de lecture', 'error');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function clearAllData() {
+    if (!confirm('⚠️ Supprimer TOUTES les données ?\n\nCette action est irréversible !')) return;
+    
+    localStorage.removeItem('pfmp_prof_config');
+    localStorage.removeItem('pfmp_prof_enseignants');
+    localStorage.removeItem('pfmp_prof_current_enseignant');
+    localStorage.removeItem('pfmp_prof_eleves');
+    localStorage.removeItem('pfmp_prof_codes');
+    localStorage.removeItem('pfmp_prof_partenaires');
+    
+    enseignants = [{ id: 1, nom: 'HENNINOT', prenom: 'Franck', email: '', tel: '', actif: true }];
+    currentEnseignant = 1;
+    eleves = [];
+    codes = [];
+    partenaires = [];
+    
+    renderAll();
+    showToast('Données supprimées', 'success');
+}
+
+// =============================================
+// UTILS
+// =============================================
+function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+</script>
+
+</body>
+</html>

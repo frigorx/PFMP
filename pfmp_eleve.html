@@ -1,0 +1,2243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1b3a63">
+    <title>📋 PFMP Stage — Élève</title>
+    <style>
+        :root {
+            --bleu: #1b3a63;
+            --bleu-clair: #2d5a8c;
+            --orange: #ff6b35;
+            --vert: #27ae60;
+            --rouge: #e74c3c;
+            --jaune: #f39c12;
+            --violet: #9b59b6;
+            --gris: #6c757d;
+            --gris-clair: #f8f9fa;
+            --blanc: #ffffff;
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            background: var(--gris-clair);
+            min-height: 100vh;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        /* === ÉCRANS === */
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: block; }
+        
+        /* === LOGIN === */
+        .login-screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-screen {
+            background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-clair) 100%);
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .login-logos img { height: 40px; }
+        
+        .login-title { font-size: 1.3rem; font-weight: 700; color: var(--bleu); margin-bottom: 5px; }
+        .login-subtitle { font-size: 0.85rem; color: var(--gris); margin-bottom: 25px; }
+        
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius);
+            font-family: 'Consolas', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+        
+        .login-input:focus { outline: none; border-color: var(--bleu); }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: var(--bleu);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+        
+        .login-btn:hover { background: var(--bleu-clair); }
+        
+        .demo-btn {
+            margin-top: 15px;
+            padding: 12px;
+            background: none;
+            border: 2px dashed var(--orange);
+            color: var(--orange);
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .login-footer {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: var(--gris);
+            line-height: 1.4;
+        }
+        
+        /* === SETUP === */
+        .setup-screen {
+            background: var(--gris-clair);
+        }
+        
+        .setup-header {
+            background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .setup-header h1 { font-size: 1.1rem; margin-bottom: 5px; }
+        .setup-header p { font-size: 0.8rem; opacity: 0.9; }
+        
+        .setup-progress {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .setup-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .setup-step.active { background: var(--orange); color: white; }
+        .setup-step.done { background: var(--vert); color: white; }
+        
+        .setup-content {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* === HEADER APP === */
+        .header {
+            background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header-brand { display: flex; align-items: center; gap: 10px; }
+        .header-brand img { height: 28px; filter: brightness(0) invert(1); }
+        .header h1 { font-size: 0.9rem; font-weight: 600; }
+        
+        .header-user {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+        
+        .header-stats { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+        .stat-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+        }
+        .stat-badge.warning { background: var(--orange); }
+        .stat-badge.success { background: var(--vert); }
+        
+        /* === TABS === */
+        .main-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 68px;
+            z-index: 99;
+        }
+        
+        .main-tab {
+            flex: 1;
+            padding: 10px 5px;
+            border: none;
+            background: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gris);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .main-tab:hover { color: var(--bleu); }
+        .main-tab.active { color: var(--bleu); border-bottom-color: var(--orange); }
+        .main-tab .icon { display: block; font-size: 1.1rem; margin-bottom: 2px; }
+        .main-tab .badge {
+            display: inline-block;
+            background: var(--violet);
+            color: white;
+            padding: 1px 5px;
+            border-radius: 8px;
+            font-size: 0.55rem;
+            vertical-align: middle;
+        }
+        
+        /* === TIMELINE === */
+        .timeline-section {
+            background: white;
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .timeline-title {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--gris);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .timeline { display: flex; gap: 2px; overflow-x: auto; padding-bottom: 5px; }
+        
+        .timeline-day {
+            min-width: 32px;
+            text-align: center;
+            cursor: pointer;
+            padding: 4px 2px;
+            border-radius: 6px;
+        }
+        
+        .timeline-day:hover { background: var(--gris-clair); }
+        
+        .timeline-dot {
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            margin: 0 auto 2px;
+            background: #e0e0e0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.5rem; font-weight: 600; color: #999;
+        }
+        
+        .timeline-dot.has-activity { background: var(--vert); color: white; }
+        .timeline-dot.today { background: var(--orange); color: white; box-shadow: 0 0 0 2px rgba(255,107,53,0.3); }
+        .timeline-dot.future { background: #f0f0f0; color: #ccc; }
+        .timeline-dot.has-task { border: 2px solid var(--violet); }
+        
+        .timeline-label { font-size: 0.5rem; color: var(--gris); }
+        
+        /* === REMINDER === */
+        .reminder {
+            background: linear-gradient(135deg, var(--orange), #ff8c5a);
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .reminder .icon { font-size: 1.3rem; }
+        .reminder .text { flex: 1; font-size: 0.85rem; font-weight: 600; }
+        .reminder .arrow { font-size: 1.2rem; }
+        
+        /* === MAIN === */
+        .main { padding: 15px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
+        
+        /* === SECTIONS === */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* === CARDS === */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--bleu);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gris-clair);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* === FORM === */
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #444;
+        }
+        .form-group .required { color: var(--rouge); }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--bleu);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .form-hint { font-size: 0.7rem; color: var(--gris); margin-top: 4px; }
+        
+        /* === PHOTO CAPTURE === */
+        .photo-capture {
+            width: 100%;
+            min-height: 100px;
+            background: var(--gris-clair);
+            border: 2px dashed #ccc;
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photo-capture:hover { border-color: var(--bleu); }
+        .photo-capture.has-photo { border-style: solid; border-color: var(--vert); }
+        .photo-capture .icon { font-size: 1.8rem; color: var(--gris); }
+        .photo-capture .text { font-size: 0.75rem; color: var(--gris); margin-top: 5px; }
+        .photo-capture input { display: none; }
+        .photo-capture img { width: 100%; height: 100%; object-fit: contain; max-height: 150px; }
+        
+        .photo-capture .retake {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            cursor: pointer;
+        }
+        
+        /* === PHOTOS GRID === */
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .photos-grid .photo-item {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .photos-grid .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .photos-grid .photo-item .delete {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--rouge);
+            color: white;
+            border: none;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            font-size: 0.6rem;
+            cursor: pointer;
+        }
+        
+        .photos-grid .add-photo {
+            aspect-ratio: 1;
+            background: var(--gris-clair);
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--gris);
+        }
+        
+        .photos-grid .add-photo:hover { border-color: var(--bleu); color: var(--bleu); }
+        
+        /* === BUTTONS === */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary { background: var(--bleu); color: white; }
+        .btn-success { background: var(--vert); color: white; }
+        .btn-violet { background: var(--violet); color: white; }
+        .btn-orange { background: var(--orange); color: white; }
+        .btn-outline { background: white; border: 2px solid var(--bleu); color: var(--bleu); }
+        
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        /* === ACTIVITY CARD === */
+        .activity-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .activity-photos {
+            display: flex;
+            overflow-x: auto;
+            gap: 2px;
+        }
+        
+        .activity-photos img {
+            height: 80px;
+            min-width: 80px;
+            object-fit: cover;
+        }
+        
+        .activity-content { padding: 12px 15px; }
+        
+        .activity-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        
+        .activity-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--bleu);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .activity-autonomy {
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 8px;
+            background: var(--gris-clair);
+            color: var(--gris);
+        }
+        
+        .activity-comment { font-size: 0.8rem; color: #444; margin-top: 8px; line-height: 1.4; }
+        .activity-time { font-size: 0.65rem; color: var(--gris); margin-top: 5px; }
+        
+        .activity-competences { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 8px; }
+        .activity-competence {
+            background: rgba(27,58,99,0.1);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--bleu);
+        }
+        
+        .activity-delete {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .activity-delete:hover { color: var(--rouge); }
+        
+        /* === TASK CARD === */
+        .task-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 15px;
+            border-left: 4px solid var(--jaune);
+            overflow: hidden;
+        }
+        
+        .task-card.complete { border-left-color: var(--vert); }
+        .task-card.validated { border-left-color: var(--bleu); }
+        
+        .task-header { padding: 15px; cursor: pointer; }
+        .task-header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .task-title { font-weight: 700; color: var(--bleu); font-size: 0.9rem; }
+        .task-meta { font-size: 0.7rem; color: var(--gris); margin-top: 3px; }
+        
+        .task-status {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            font-weight: 600;
+        }
+        
+        .task-status.draft { background: #fff3cd; color: #856404; }
+        .task-status.complete { background: #d4edda; color: #155724; }
+        .task-status.validated { background: #d1ecf1; color: #0c5460; }
+        
+        .task-photos { display: flex; gap: 3px; padding: 0 15px 10px; overflow-x: auto; }
+        .task-photos img { height: 50px; min-width: 50px; object-fit: cover; border-radius: 5px; }
+        
+        .task-competences { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 15px 15px; }
+        .task-competence {
+            background: rgba(155,89,182,0.15);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--violet);
+        }
+        
+        /* === COMPETENCES CHECKBOXES === */
+        .competences-list { margin-top: 10px; }
+        
+        .competence-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            background: var(--gris-clair);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        
+        .competence-item:hover { background: #eee; }
+        
+        .competence-item input { margin-top: 3px; }
+        
+        .competence-item .code {
+            font-weight: 700;
+            color: var(--bleu);
+            font-size: 0.8rem;
+            min-width: 40px;
+        }
+        
+        .competence-item .label { font-size: 0.8rem; color: #444; }
+        
+        /* === ACTIVITY BUTTONS === */
+        .activity-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .activity-type-btn {
+            padding: 12px 8px;
+            background: var(--gris-clair);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .activity-type-btn:hover { border-color: var(--bleu); }
+        .activity-type-btn.selected { border-color: var(--vert); background: rgba(39,174,96,0.1); }
+        
+        .activity-type-btn .icon { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+        .activity-type-btn .label { font-size: 0.65rem; font-weight: 600; color: #444; }
+        
+        /* === AUTONOMY BUTTONS === */
+        .autonomy-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .autonomy-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: var(--gris-clair);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .autonomy-btn:hover { border-color: var(--bleu); }
+        .autonomy-btn.selected { border-color: var(--vert); background: rgba(39,174,96,0.1); }
+        
+        .autonomy-btn .icon { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+        .autonomy-btn .label { font-size: 0.65rem; font-weight: 600; }
+        
+        /* === CONTACT PREFERENCE === */
+        .contact-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .contact-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: var(--gris-clair);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .contact-option:hover { border-color: var(--bleu-clair); }
+        .contact-option.selected { border-color: var(--vert); background: rgba(39,174,96,0.1); }
+        
+        .contact-option .icon { font-size: 1.5rem; }
+        .contact-option .info { flex: 1; }
+        .contact-option .title { font-weight: 600; font-size: 0.9rem; }
+        .contact-option .desc { font-size: 0.75rem; color: var(--gris); }
+        
+        /* === MODAL === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+        
+        .modal-header h3 { font-size: 1rem; color: var(--bleu); }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gris);
+        }
+        
+        .modal-body { padding: 20px; }
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .modal-footer .btn { margin: 0; }
+        
+        /* === INFO BOX === */
+        .info-box {
+            background: rgba(27,58,99,0.05);
+            border-left: 4px solid var(--bleu);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+        }
+        
+        .info-box p { font-size: 0.8rem; color: #444; line-height: 1.5; }
+        
+        /* === EMPTY STATE === */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gris);
+        }
+        
+        .empty-state .icon { font-size: 3rem; margin-bottom: 15px; }
+        .empty-state p { font-size: 0.9rem; margin-bottom: 20px; }
+        
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bleu);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--vert); }
+        .toast.error { background: var(--rouge); }
+        
+        /* === NAV BOTTOM === */
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            padding: 10px 20px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-bottom .btn { margin: 0; flex: 1; }
+    </style>
+</head>
+<body>
+
+<!-- ========================================
+     ÉCRAN CONNEXION
+     ======================================== -->
+<div class="screen login-screen active" id="loginScreen">
+    <div class="login-box">
+        <div class="login-logos">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTIwIDQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUiIHk9IjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWIzYTYzIj5FUVVBVElPPC90ZXh0Pjx0ZXh0IHg9IjUiIHk9IjM1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iIzY2NiI+Q3LDqWF0ZXVyIGQnYXZlbmlyPC90ZXh0Pjwvc3ZnPg==" alt="EQUATIO">
+        </div>
+        
+        <div class="login-title">📋 PFMP Stage</div>
+        <div class="login-subtitle">Suivi de stage — Espace Élève</div>
+        
+        <input type="text" class="login-input" id="codeInput" placeholder="CODE ÉLÈVE" maxlength="12">
+        
+        <button class="login-btn" onclick="login()">Se connecter</button>
+        
+        <button class="demo-btn" onclick="loginDemo()">🎮 Mode Démo</button>
+        
+        <div class="login-footer">
+            <strong>Lycée Professionnel Privé Jacques Raynaud</strong><br>
+            Campus EQUATIO — 59 Trav. Charles Susini — 13013 Marseille
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     ÉCRAN CONFIGURATION INITIALE
+     ======================================== -->
+<div class="screen setup-screen" id="setupScreen">
+    <div class="setup-header">
+        <h1>⚙️ Configuration du stage</h1>
+        <p>Remplis ces informations une seule fois</p>
+    </div>
+    
+    <div class="setup-progress">
+        <div class="setup-step active" data-step="1">1</div>
+        <div class="setup-step" data-step="2">2</div>
+        <div class="setup-step" data-step="3">3</div>
+    </div>
+    
+    <div class="setup-content">
+        <!-- ÉTAPE 1 : MES INFOS -->
+        <div class="setup-section" id="setup-1">
+            <div class="card">
+                <div class="card-title">👤 Mes informations</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nom <span class="required">*</span></label>
+                        <input type="text" id="setupNom" placeholder="DUPONT">
+                    </div>
+                    <div class="form-group">
+                        <label>Prénom <span class="required">*</span></label>
+                        <input type="text" id="setupPrenom" placeholder="Martin">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Classe <span class="required">*</span></label>
+                    <select id="setupClasse">
+                        <option value="">Sélectionne ta classe</option>
+                        <option value="CAP IFCA 1">CAP IFCA 1ère année</option>
+                        <option value="CAP IFCA 2">CAP IFCA 2ème année</option>
+                        <option value="BAC PRO MFER">BAC PRO MFER</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>📱 WhatsApp <span class="required">*</span></label>
+                    <input type="tel" id="setupTel" placeholder="06 12 34 56 78">
+                    <div class="form-hint">⚠️ Obligatoire — Tu recevras les rappels sur ce numéro</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="nextSetupStep(2)">Suivant →</button>
+        </div>
+        
+        <!-- ÉTAPE 2 : ENTREPRISE -->
+        <div class="setup-section" id="setup-2" style="display:none;">
+            <div class="card">
+                <div class="card-title">🏢 Entreprise d'accueil</div>
+                
+                <div class="form-group">
+                    <label>Nom de l'entreprise <span class="required">*</span></label>
+                    <input type="text" id="setupEntreprise" placeholder="FRIGOTECH SARL">
+                </div>
+                
+                <div class="form-group">
+                    <label>Adresse</label>
+                    <input type="text" id="setupAdresse" placeholder="12 rue des Frigos, 13008 Marseille">
+                </div>
+                
+                <div class="form-group">
+                    <label>Secteur d'activité <span class="required">*</span></label>
+                    <select id="setupSecteur">
+                        <option value="">Sélectionne...</option>
+                        <option value="Frigoriste">Frigoriste</option>
+                        <option value="Climatisation / PAC">Climatisation / PAC</option>
+                        <option value="Plomberie / Chauffage">Plomberie / Chauffage</option>
+                        <option value="Électricité">Électricité</option>
+                        <option value="Électroménager">Électroménager</option>
+                        <option value="Multi-techniques">Multi-techniques / Multi-services</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tél. entreprise</label>
+                        <input type="tel" id="setupEntTel" placeholder="04 91 XX XX XX">
+                    </div>
+                    <div class="form-group">
+                        <label>Email entreprise</label>
+                        <input type="email" id="setupEntEmail" placeholder="contact@...">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📷 Photo tampon / entête</label>
+                    <div class="photo-capture" id="photoTamponCapture" onclick="document.getElementById('photoTamponInput').click()">
+                        <span class="icon">📷</span>
+                        <span class="text">Ajouter une photo</span>
+                        <input type="file" id="photoTamponInput" accept="image/*" capture="environment" onchange="handlePhotoTampon(event)">
+                    </div>
+                    <div class="form-hint">Utile pour identifier l'entreprise officiellement</div>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-outline" onclick="prevSetupStep(1)">← Retour</button>
+                <button class="btn btn-primary" onclick="nextSetupStep(3)">Suivant →</button>
+            </div>
+        </div>
+        
+        <!-- ÉTAPE 3 : TUTEUR -->
+        <div class="setup-section" id="setup-3" style="display:none;">
+            <div class="card">
+                <div class="card-title">👷 Tuteur en entreprise</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nom <span class="required">*</span></label>
+                        <input type="text" id="setupTuteurNom" placeholder="M. Bernard">
+                    </div>
+                    <div class="form-group">
+                        <label>Fonction</label>
+                        <input type="text" id="setupTuteurFonction" placeholder="Chef d'équipe">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📱 Portable tuteur <span class="required">*</span></label>
+                    <input type="tel" id="setupTuteurTel" placeholder="06 XX XX XX XX">
+                </div>
+                
+                <div class="form-group">
+                    <label>📧 Email tuteur <span class="required">*</span></label>
+                    <input type="email" id="setupTuteurEmail" placeholder="tuteur@entreprise.fr">
+                </div>
+                
+                <div class="form-group">
+                    <label>Comment le tuteur préfère être contacté ?</label>
+                    <div class="contact-options">
+                        <div class="contact-option selected" data-mode="whatsapp" onclick="selectContactMode(this)">
+                            <span class="icon">💬</span>
+                            <div class="info">
+                                <div class="title">WhatsApp</div>
+                                <div class="desc">Rappel + lien direct (recommandé)</div>
+                            </div>
+                        </div>
+                        <div class="contact-option" data-mode="email" onclick="selectContactMode(this)">
+                            <span class="icon">📧</span>
+                            <div class="info">
+                                <div class="title">Email</div>
+                                <div class="desc">Email avec lien de validation</div>
+                            </div>
+                        </div>
+                        <div class="contact-option" data-mode="phone" onclick="selectContactMode(this)">
+                            <span class="icon">📞</span>
+                            <div class="info">
+                                <div class="title">Téléphone</div>
+                                <div class="desc">Le professeur l'appellera</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-outline" onclick="prevSetupStep(2)">← Retour</button>
+                <button class="btn btn-success" onclick="finishSetup()">✓ Terminer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     ÉCRAN APPLICATION PRINCIPALE
+     ======================================== -->
+<div class="screen" id="appScreen">
+    <div class="header">
+        <div class="header-top">
+            <div class="header-brand">
+                <h1>📋 PFMP Stage</h1>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="header-user" id="headerUser">Martin D.</div>
+                <button onclick="deconnexion()" style="background:rgba(255,255,255,0.2);border:none;color:white;padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer;">⏻</button>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-badge" id="statJour">📅 J1</div>
+            <div class="stat-badge" id="statActivites">📝 0 activités</div>
+            <div class="stat-badge" id="statTaches">🎯 0 tâches</div>
+        </div>
+    </div>
+    
+    <div class="main-tabs">
+        <button class="main-tab active" data-tab="journal" onclick="showTab('journal')">
+            <span class="icon">📝</span>
+            Journal
+        </button>
+        <button class="main-tab" data-tab="taches" onclick="showTab('taches')">
+            <span class="icon">🎯</span>
+            Tâches <span class="badge" id="badgeTaches">0</span>
+        </button>
+        <button class="main-tab" data-tab="infos" onclick="showTab('infos')">
+            <span class="icon">ℹ️</span>
+            Infos
+        </button>
+        <button class="main-tab" data-tab="export" onclick="showTab('export')">
+            <span class="icon">📤</span>
+            Export
+        </button>
+    </div>
+    
+    <!-- TIMELINE -->
+    <div class="timeline-section">
+        <div class="timeline-title">📅 Mon stage</div>
+        <div class="timeline" id="timeline"></div>
+    </div>
+    
+    <!-- REMINDER -->
+    <div class="reminder" id="reminder" style="display:none;" onclick="openAddActivity()">
+        <span class="icon">⚠️</span>
+        <span class="text">Tu n'as rien enregistré aujourd'hui !</span>
+        <span class="arrow">→</span>
+    </div>
+    
+    <main class="main">
+        <!-- SECTION JOURNAL -->
+        <section class="section active" id="section-journal">
+            <button class="btn btn-success" onclick="openAddActivity()">
+                ➕ Ajouter une activité
+            </button>
+            
+            <div id="activitiesList">
+                <!-- Généré par JS -->
+            </div>
+        </section>
+        
+        <!-- SECTION TÂCHES COMPLEXES -->
+        <section class="section" id="section-taches">
+            <div class="info-box">
+                <p><strong>🎯 Tâche complexe</strong> = une intervention complète que tu documentes en détail pour ton CCF (plusieurs photos, étapes, compétences).</p>
+            </div>
+            
+            <button class="btn btn-violet" onclick="openAddTask()">
+                ➕ Nouvelle tâche complexe
+            </button>
+            
+            <div id="tasksList">
+                <!-- Généré par JS -->
+            </div>
+        </section>
+        
+        <!-- SECTION INFOS -->
+        <section class="section" id="section-infos">
+            <div class="card">
+                <div class="card-title">👤 Mes informations</div>
+                <div id="infoEleve"></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">🏢 Entreprise</div>
+                <div id="infoEntreprise"></div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">👷 Tuteur</div>
+                <div id="infoTuteur"></div>
+            </div>
+            
+            <!-- QR CODE POUR LE TUTEUR -->
+            <div class="card" style="text-align:center;background:linear-gradient(135deg, #f8f9fa 0%, #e8f4f8 100%);">
+                <div class="card-title">📲 QR Code pour le tuteur</div>
+                <p style="font-size:0.85rem;color:#666;margin-bottom:15px;">
+                    Montrez ce code à votre tuteur pour qu'il accède au suivi
+                </p>
+                <div id="qrCodeTuteur" style="display:inline-block;background:white;padding:15px;border-radius:15px;box-shadow:0 5px 20px rgba(0,0,0,0.1);"></div>
+                <p style="font-size:0.75rem;color:#888;margin-top:15px;">
+                    Ou envoyez-lui le lien par WhatsApp / Email
+                </p>
+                <div style="display:flex;gap:10px;justify-content:center;margin-top:10px;flex-wrap:wrap;">
+                    <button class="btn btn-success" onclick="envoyerLienTuteurWhatsApp()" style="padding:10px 20px;">
+                        💬 WhatsApp
+                    </button>
+                    <button class="btn btn-primary" onclick="envoyerLienTuteurEmail()" style="padding:10px 20px;">
+                        📧 Email
+                    </button>
+                    <button class="btn btn-outline" onclick="copierLienTuteur()" style="padding:10px 20px;">
+                        📋 Copier
+                    </button>
+                </div>
+            </div>
+            
+            <button class="btn btn-outline" onclick="editSetup()">✏️ Modifier les informations</button>
+        </section>
+        
+        <!-- SECTION EXPORT -->
+        <section class="section" id="section-export">
+            <div class="card">
+                <div class="card-title">📤 Sauvegarder mes données</div>
+                
+                <div class="info-box" style="margin-bottom:15px;">
+                    <p>Ton espace Drive personnel pour stocker tes photos et exports.</p>
+                </div>
+                
+                <div id="driveNotConfigured" style="display:none;">
+                    <div class="form-group">
+                        <label>🔗 Colle ton lien Drive (donné par ton prof)</label>
+                        <input type="text" id="inputLienDrive" placeholder="https://drive.google.com/drive/folders/...">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveLienDrive()">
+                        💾 Enregistrer mon lien
+                    </button>
+                </div>
+                
+                <div id="driveConfigured" style="display:none;">
+                    <button class="btn btn-success btn-block" onclick="ouvrirDrive()">
+                        📂 Ouvrir mon espace Drive
+                    </button>
+                    <p style="font-size:0.75rem;color:#888;margin-top:10px;text-align:center;">
+                        Dépose tes photos et exports dans ce dossier
+                    </p>
+                    <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="resetLienDrive()">
+                        ✏️ Modifier le lien
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">💾 Télécharger</div>
+                
+                <button class="btn btn-primary btn-block" onclick="exportJSON()">
+                    📄 Exporter mes données (JSON)
+                </button>
+                
+                <button class="btn btn-outline btn-block" style="margin-top:10px;" onclick="exportPhotosZip()">
+                    📷 Télécharger mes photos
+                </button>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- ========================================
+     MODAL AJOUT ACTIVITÉ
+     ======================================== -->
+<div class="modal" id="modalActivity">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>➕ Nouvelle activité</h3>
+            <button class="modal-close" onclick="closeModal('modalActivity')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>📷 Photo(s)</label>
+                <div class="photos-grid" id="activityPhotos">
+                    <div class="add-photo" onclick="addActivityPhoto()">+</div>
+                </div>
+                <input type="file" id="activityPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="handleActivityPhoto(event)">
+            </div>
+            
+            <div class="form-group">
+                <label>Type d'activité <span class="required">*</span></label>
+                <div class="activity-types" id="activityTypes">
+                    <div class="activity-type-btn" data-type="pose" onclick="selectActivityType(this)">
+                        <span class="icon">🔧</span>
+                        <span class="label">Pose / Montage</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="cablage" onclick="selectActivityType(this)">
+                        <span class="icon">⚡</span>
+                        <span class="label">Câblage</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="brasage" onclick="selectActivityType(this)">
+                        <span class="icon">🔥</span>
+                        <span class="label">Brasage</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="charge" onclick="selectActivityType(this)">
+                        <span class="icon">❄️</span>
+                        <span class="label">Charge fluide</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="mesure" onclick="selectActivityType(this)">
+                        <span class="icon">📊</span>
+                        <span class="label">Mesure / Contrôle</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="maintenance" onclick="selectActivityType(this)">
+                        <span class="icon">🛠️</span>
+                        <span class="label">Maintenance</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="depannage" onclick="selectActivityType(this)">
+                        <span class="icon">🚨</span>
+                        <span class="label">Dépannage</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="faconnage" onclick="selectActivityType(this)">
+                        <span class="icon">📐</span>
+                        <span class="label">Façonnage tube</span>
+                    </div>
+                    <div class="activity-type-btn" data-type="autre" onclick="selectActivityType(this)">
+                        <span class="icon">📝</span>
+                        <span class="label">Autre</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Niveau d'autonomie <span class="required">*</span></label>
+                <div class="autonomy-btns">
+                    <div class="autonomy-btn" data-level="observe" onclick="selectAutonomy(this)">
+                        <span class="icon">👀</span>
+                        <span class="label">J'ai observé</span>
+                    </div>
+                    <div class="autonomy-btn" data-level="aide" onclick="selectAutonomy(this)">
+                        <span class="icon">🤝</span>
+                        <span class="label">Avec aide</span>
+                    </div>
+                    <div class="autonomy-btn" data-level="seul" onclick="selectAutonomy(this)">
+                        <span class="icon">💪</span>
+                        <span class="label">Seul</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Commentaire</label>
+                <textarea id="activityComment" rows="3" placeholder="Décris ce que tu as fait..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalActivity')" style="flex:1;">Annuler</button>
+            <button class="btn btn-success" onclick="saveActivity()" style="flex:2;">✓ Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     MODAL TÂCHE COMPLEXE
+     ======================================== -->
+<div class="modal" id="modalTask">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>🎯 Nouvelle tâche complexe</h3>
+            <button class="modal-close" onclick="closeModal('modalTask')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Titre de l'intervention <span class="required">*</span></label>
+                <input type="text" id="taskTitle" placeholder="Ex: Installation split Samsung 3.5kW">
+            </div>
+            
+            <div class="form-group">
+                <label>Type d'installation</label>
+                <select id="taskType">
+                    <option value="">Sélectionne...</option>
+                    <option value="Split">Split / Multi-split</option>
+                    <option value="PAC">Pompe à chaleur</option>
+                    <option value="Climatisation">Climatisation gainable</option>
+                    <option value="Chambre froide">Chambre froide</option>
+                    <option value="Meuble froid">Meuble frigorifique</option>
+                    <option value="Chaudière">Chaudière</option>
+                    <option value="Ballon">Ballon thermodynamique</option>
+                    <option value="Autre">Autre</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>📷 Photos de l'intervention</label>
+                <div class="photos-grid" id="taskPhotos">
+                    <div class="add-photo" onclick="addTaskPhoto()">+</div>
+                </div>
+                <input type="file" id="taskPhotoInput" accept="image/*" capture="environment" style="display:none" onchange="handleTaskPhoto(event)" multiple>
+                <div class="form-hint">Prends plusieurs photos : avant, pendant, après</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Description du travail</label>
+                <textarea id="taskDescription" rows="4" placeholder="Décris en détail ce que tu as fait, les étapes, les difficultés rencontrées..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Compétences mobilisées</label>
+                <div class="competences-list" id="taskCompetences">
+                    <!-- Généré par JS -->
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('modalTask')" style="flex:1;">Annuler</button>
+            <button class="btn btn-violet" onclick="saveTask()" style="flex:2;">💾 Enregistrer brouillon</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// =============================================
+// CONFIGURATION
+// =============================================
+const PEARLTREES_URL = 'https://www.pearltrees.com/private/id102655033?access=47af96018d7.61e6439.08abcff2f310b27abea01bd0388158ec';
+const STAGE_START = new Date('2026-01-06');
+const STAGE_DAYS = 20;
+
+// Compétences EP2 CAP IFCA
+const COMPETENCES = [
+    { code: 'C1.2', label: 'Communiquer, rendre compte' },
+    { code: 'C2.1', label: 'Préparer les opérations' },
+    { code: 'C3.1', label: 'Organiser son intervention' },
+    { code: 'C3.2', label: 'Identifier les risques, appliquer les mesures de prévention' },
+    { code: 'C3.3', label: 'Implanter, poser les équipements' },
+    { code: 'C3.4', label: 'Façonner, raccorder les circuits fluidiques' },
+    { code: 'C3.5', label: 'Poser les réseaux aérauliques' },
+    { code: 'C3.6', label: 'Raccorder les équipements électriques' },
+    { code: 'C3.7', label: 'Réaliser les mesures, les contrôles' },
+    { code: 'C3.8', label: 'Régler, paramétrer la régulation' },
+    { code: 'C3.9', label: 'Réaliser les opérations de mise en service' }
+];
+
+// Mapping activités → compétences
+const ACTIVITY_COMPETENCES = {
+    pose: ['C3.1', 'C3.3'],
+    cablage: ['C3.6'],
+    brasage: ['C3.4'],
+    charge: ['C3.9'],
+    mesure: ['C3.7'],
+    maintenance: ['C3.1', 'C3.7'],
+    depannage: ['C3.2', 'C3.7'],
+    faconnage: ['C3.4'],
+    autre: []
+};
+
+// =============================================
+// DONNÉES
+// =============================================
+let currentCode = null;
+let data = {
+    code: '',
+    eleve: { nom: '', prenom: '', classe: '', tel: '' },
+    entreprise: { nom: '', adresse: '', secteur: '', tel: '', email: '', tampon: null },
+    tuteur: { nom: '', fonction: '', tel: '', email: '', contactMode: 'whatsapp' },
+    activities: [],
+    tasks: [],
+    setupComplete: false
+};
+
+// Variables temporaires pour les modales
+let tempActivityPhotos = [];
+let tempTaskPhotos = [];
+let selectedActivityType = null;
+let selectedAutonomy = null;
+
+// =============================================
+// INIT
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+    // Lire le code depuis l'URL (?code=ELV-001)
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeFromUrl = urlParams.get('code');
+    const driveFromUrl = urlParams.get('drive');
+    
+    if (codeFromUrl) {
+        // Code dans l'URL → connexion automatique
+        currentCode = codeFromUrl.toUpperCase();
+        localStorage.setItem('pfmp_current_code', currentCode);
+        
+        // Si lien Drive fourni, le sauvegarder
+        if (driveFromUrl) {
+            localStorage.setItem('pfmp_drive_' + currentCode, driveFromUrl);
+        }
+        
+        loadData();
+        
+        if (data.setupComplete) {
+            showScreen('appScreen');
+            renderApp();
+        } else {
+            showScreen('setupScreen');
+        }
+        return;
+    }
+    
+    // Vérifier si déjà connecté
+    const savedCode = localStorage.getItem('pfmp_current_code');
+    if (savedCode) {
+        currentCode = savedCode;
+        loadData();
+        if (data.setupComplete) {
+            showScreen('appScreen');
+            renderApp();
+        } else {
+            showScreen('setupScreen');
+        }
+    }
+});
+
+// =============================================
+// ÉCRANS
+// =============================================
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+// =============================================
+// LOGIN
+// =============================================
+function login() {
+    const code = document.getElementById('codeInput').value.trim().toUpperCase();
+    if (!code) {
+        showToast('Entre ton code eleve', 'error');
+        return;
+    }
+    
+    currentCode = code;
+    localStorage.setItem('pfmp_current_code', code);
+    loadData();
+    
+    if (data.setupComplete) {
+        showScreen('appScreen');
+        renderApp();
+    } else {
+        showScreen('setupScreen');
+    }
+}
+
+function deconnexion() {
+    if (confirm('Te deconnecter ? Tes donnees sont conservees.')) {
+        localStorage.removeItem('pfmp_current_code');
+        currentCode = null;
+        window.location.href = window.location.pathname;
+    }
+}
+
+function loginDemo() {
+    currentCode = 'DEMO-001';
+    localStorage.setItem('pfmp_current_code', currentCode);
+    
+    data = {
+        code: 'DEMO-001',
+        eleve: { nom: 'DUPONT', prenom: 'Martin', classe: 'CAP IFCA 1', tel: '0612345678' },
+        entreprise: {
+            nom: 'FRIGOTECH SARL',
+            adresse: '12 rue des Frigos, 13008 Marseille',
+            secteur: 'Climatisation / PAC',
+            tel: '0491000000',
+            email: 'contact@frigotech.fr',
+            tampon: null
+        },
+        tuteur: {
+            nom: 'M. Bernard',
+            fonction: 'Chef d\'equipe',
+            tel: '0698765432',
+            email: 'bernard@frigotech.fr',
+            contactMode: 'whatsapp'
+        },
+        activities: [
+            { id: 1, date: '2026-01-06', dayIndex: 0, type: 'pose', autonomy: 'observe', comment: 'Observation installation split', photos: [], competences: ['C3.1', 'C3.3'] },
+            { id: 2, date: '2026-01-07', dayIndex: 1, type: 'cablage', autonomy: 'aide', comment: 'Raccordement electrique avec le tuteur', photos: [], competences: ['C3.6'] },
+            { id: 3, date: '2026-01-08', dayIndex: 2, type: 'brasage', autonomy: 'observe', comment: 'Observation brasure cuivre', photos: [], competences: ['C3.4'] }
+        ],
+        tasks: [
+            {
+                id: 1,
+                title: 'Installation split Samsung 3.5kW',
+                type: 'Split',
+                description: 'Installation complete chez un particulier...',
+                photos: [],
+                competences: ['C3.1', 'C3.3', 'C3.4', 'C3.6', 'C3.9'],
+                status: 'draft',
+                createdAt: '2026-01-08'
+            }
+        ],
+        setupComplete: true
+    };
+    
+    saveData();
+    showScreen('appScreen');
+    renderApp();
+    showToast('Mode demo active', 'success');
+}
+
+// =============================================
+// SETUP
+// =============================================
+function nextSetupStep(step) {
+    // Validation
+    if (step === 2) {
+        if (!document.getElementById('setupNom').value.trim()) {
+            showToast('Remplis ton nom', 'error');
+            return;
+        }
+        if (!document.getElementById('setupPrenom').value.trim()) {
+            showToast('Remplis ton prénom', 'error');
+            return;
+        }
+        if (!document.getElementById('setupClasse').value) {
+            showToast('Sélectionne ta classe', 'error');
+            return;
+        }
+        if (!document.getElementById('setupTel').value.trim()) {
+            showToast('Entre ton numéro WhatsApp', 'error');
+            return;
+        }
+        
+        // Sauvegarder étape 1
+        data.eleve.nom = document.getElementById('setupNom').value.trim().toUpperCase();
+        data.eleve.prenom = document.getElementById('setupPrenom').value.trim();
+        data.eleve.classe = document.getElementById('setupClasse').value;
+        data.eleve.tel = document.getElementById('setupTel').value.replace(/\s/g, '');
+    }
+    
+    if (step === 3) {
+        if (!document.getElementById('setupEntreprise').value.trim()) {
+            showToast('Entre le nom de l\'entreprise', 'error');
+            return;
+        }
+        if (!document.getElementById('setupSecteur').value) {
+            showToast('Sélectionne le secteur', 'error');
+            return;
+        }
+        
+        // Sauvegarder étape 2
+        data.entreprise.nom = document.getElementById('setupEntreprise').value.trim();
+        data.entreprise.adresse = document.getElementById('setupAdresse').value.trim();
+        data.entreprise.secteur = document.getElementById('setupSecteur').value;
+        data.entreprise.tel = document.getElementById('setupEntTel').value.replace(/\s/g, '');
+        data.entreprise.email = document.getElementById('setupEntEmail').value.trim();
+    }
+    
+    // Afficher étape suivante
+    document.querySelectorAll('.setup-section').forEach(s => s.style.display = 'none');
+    document.getElementById('setup-' + step).style.display = 'block';
+    
+    // Mettre à jour progress
+    document.querySelectorAll('.setup-step').forEach(s => {
+        const stepNum = parseInt(s.dataset.step);
+        s.classList.remove('active', 'done');
+        if (stepNum < step) s.classList.add('done');
+        if (stepNum === step) s.classList.add('active');
+    });
+}
+
+function prevSetupStep(step) {
+    document.querySelectorAll('.setup-section').forEach(s => s.style.display = 'none');
+    document.getElementById('setup-' + step).style.display = 'block';
+    
+    document.querySelectorAll('.setup-step').forEach(s => {
+        const stepNum = parseInt(s.dataset.step);
+        s.classList.remove('active', 'done');
+        if (stepNum < step) s.classList.add('done');
+        if (stepNum === step) s.classList.add('active');
+    });
+}
+
+function finishSetup() {
+    // Validation étape 3
+    if (!document.getElementById('setupTuteurNom').value.trim()) {
+        showToast('Entre le nom du tuteur', 'error');
+        return;
+    }
+    if (!document.getElementById('setupTuteurTel').value.trim()) {
+        showToast('Entre le téléphone du tuteur', 'error');
+        return;
+    }
+    if (!document.getElementById('setupTuteurEmail').value.trim()) {
+        showToast('Entre l\'email du tuteur', 'error');
+        return;
+    }
+    
+    // Sauvegarder étape 3
+    data.tuteur.nom = document.getElementById('setupTuteurNom').value.trim();
+    data.tuteur.fonction = document.getElementById('setupTuteurFonction').value.trim();
+    data.tuteur.tel = document.getElementById('setupTuteurTel').value.replace(/\s/g, '');
+    data.tuteur.email = document.getElementById('setupTuteurEmail').value.trim();
+    
+    const selectedOption = document.querySelector('.contact-option.selected');
+    data.tuteur.contactMode = selectedOption ? selectedOption.dataset.mode : 'whatsapp';
+    
+    data.setupComplete = true;
+    saveData();
+    
+    showScreen('appScreen');
+    renderApp();
+    showToast('Configuration terminée ! 🎉', 'success');
+}
+
+function selectContactMode(el) {
+    document.querySelectorAll('.contact-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+function handlePhotoTampon(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        data.entreprise.tampon = e.target.result;
+        const capture = document.getElementById('photoTamponCapture');
+        capture.innerHTML = `<img src="${e.target.result}"><button class="retake" onclick="event.stopPropagation(); document.getElementById('photoTamponInput').click();">Reprendre</button>`;
+        capture.classList.add('has-photo');
+    };
+    reader.readAsDataURL(file);
+}
+
+// =============================================
+// APP PRINCIPALE
+// =============================================
+function renderApp() {
+    document.getElementById('headerUser').textContent = `${data.eleve.prenom} ${data.eleve.nom.charAt(0)}.`;
+    
+    renderTimeline();
+    renderStats();
+    renderActivities();
+    renderTasks();
+    renderInfos();
+    renderDriveSection();
+    checkReminder();
+}
+
+function renderTimeline() {
+    const container = document.getElementById('timeline');
+    const today = new Date();
+    let html = '';
+    
+    for (let i = 0; i < STAGE_DAYS; i++) {
+        const date = new Date(STAGE_START);
+        date.setDate(date.getDate() + i);
+        
+        const dayNum = i + 1;
+        const isToday = date.toDateString() === today.toDateString();
+        const isFuture = date > today;
+        const hasActivity = data.activities.some(a => a.dayIndex === i);
+        const hasTask = data.tasks.some(t => {
+            const taskDate = new Date(t.createdAt);
+            return taskDate.toDateString() === date.toDateString();
+        });
+        
+        let dotClass = '';
+        if (isToday) dotClass = 'today';
+        else if (isFuture) dotClass = 'future';
+        else if (hasActivity) dotClass = 'has-activity';
+        if (hasTask) dotClass += ' has-task';
+        
+        const dayNames = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+        
+        html += `
+            <div class="timeline-day" onclick="scrollToDay(${i})">
+                <div class="timeline-dot ${dotClass}">${dayNum}</div>
+                <div class="timeline-label">${dayNames[date.getDay()]}</div>
+            </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+    
+    // Scroll vers aujourd'hui
+    setTimeout(() => {
+        const todayDot = container.querySelector('.timeline-dot.today');
+        if (todayDot) {
+            todayDot.parentElement.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+    }, 100);
+}
+
+function renderStats() {
+    const today = new Date();
+    const diffTime = today - STAGE_START;
+    const diffDays = Math.max(1, Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1);
+    
+    document.getElementById('statJour').textContent = `📅 J${Math.min(diffDays, STAGE_DAYS)}`;
+    document.getElementById('statActivites').textContent = `📝 ${data.activities.length} activités`;
+    document.getElementById('statTaches').textContent = `🎯 ${data.tasks.length} tâches`;
+    document.getElementById('badgeTaches').textContent = data.tasks.length;
+}
+
+function checkReminder() {
+    const today = new Date().toDateString();
+    const hasActivityToday = data.activities.some(a => new Date(a.date).toDateString() === today);
+    document.getElementById('reminder').style.display = hasActivityToday ? 'none' : 'flex';
+}
+
+function renderActivities() {
+    const container = document.getElementById('activitiesList');
+    
+    if (data.activities.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">📝</div>
+                <p>Aucune activité enregistrée</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const sorted = [...data.activities].sort((a, b) => b.dayIndex - a.dayIndex);
+    
+    container.innerHTML = sorted.map(a => {
+        const typeLabels = {
+            pose: '🔧 Pose/Montage', cablage: '⚡ Câblage', brasage: '🔥 Brasage',
+            charge: '❄️ Charge', mesure: '📊 Mesure', maintenance: '🛠️ Maintenance',
+            depannage: '🚨 Dépannage', faconnage: '📐 Façonnage', autre: '📝 Autre'
+        };
+        
+        const autonomyLabels = {
+            observe: '👀 Observé', aide: '🤝 Avec aide', seul: '💪 Seul'
+        };
+        
+        return `
+            <div class="activity-card">
+                ${a.photos && a.photos.length > 0 ? `
+                    <div class="activity-photos">
+                        ${a.photos.map(p => `<img src="${p}">`).join('')}
+                    </div>
+                ` : ''}
+                <div class="activity-content">
+                    <div class="activity-header">
+                        <div>
+                            <span class="activity-type">${typeLabels[a.type] || a.type}</span>
+                            <span class="activity-autonomy">${autonomyLabels[a.autonomy] || a.autonomy}</span>
+                        </div>
+                        <button class="activity-delete" onclick="deleteActivity(${a.id})">🗑️</button>
+                    </div>
+                    ${a.comment ? `<div class="activity-comment">${a.comment}</div>` : ''}
+                    <div class="activity-time">📅 Jour ${a.dayIndex + 1} — ${new Date(a.date).toLocaleDateString('fr-FR')}</div>
+                    ${a.competences && a.competences.length > 0 ? `
+                        <div class="activity-competences">
+                            ${a.competences.map(c => `<span class="activity-competence">${c}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderTasks() {
+    const container = document.getElementById('tasksList');
+    
+    if (data.tasks.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="icon">🎯</div>
+                <p>Aucune tâche complexe</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = data.tasks.map(t => `
+        <div class="task-card ${t.status}" onclick="openTask(${t.id})">
+            <div class="task-header">
+                <div class="task-header-top">
+                    <div>
+                        <div class="task-title">${t.title}</div>
+                        <div class="task-meta">${t.type || 'Non défini'} — ${new Date(t.createdAt).toLocaleDateString('fr-FR')}</div>
+                    </div>
+                    <span class="task-status ${t.status}">${t.status === 'draft' ? '📝 Brouillon' : t.status === 'complete' ? '✅ Terminée' : '✓ Validée'}</span>
+                </div>
+            </div>
+            ${t.photos && t.photos.length > 0 ? `
+                <div class="task-photos">
+                    ${t.photos.slice(0, 5).map(p => `<img src="${p}">`).join('')}
+                    ${t.photos.length > 5 ? `<span style="padding:15px;color:var(--gris);">+${t.photos.length - 5}</span>` : ''}
+                </div>
+            ` : ''}
+            ${t.competences && t.competences.length > 0 ? `
+                <div class="task-competences">
+                    ${t.competences.map(c => `<span class="task-competence">${c}</span>`).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+}
+
+function renderInfos() {
+    document.getElementById('infoEleve').innerHTML = `
+        <p><strong>Nom :</strong> ${data.eleve.nom} ${data.eleve.prenom}</p>
+        <p><strong>Classe :</strong> ${data.eleve.classe}</p>
+        <p><strong>WhatsApp :</strong> ${data.eleve.tel}</p>
+    `;
+    
+    document.getElementById('infoEntreprise').innerHTML = `
+        <p><strong>Nom :</strong> ${data.entreprise.nom}</p>
+        <p><strong>Adresse :</strong> ${data.entreprise.adresse || '—'}</p>
+        <p><strong>Secteur :</strong> ${data.entreprise.secteur}</p>
+        <p><strong>Tél :</strong> ${data.entreprise.tel || '—'}</p>
+        <p><strong>Email :</strong> ${data.entreprise.email || '—'}</p>
+        ${data.entreprise.tampon ? `<p><strong>Tampon :</strong> <img src="${data.entreprise.tampon}" style="max-height:60px;margin-top:5px;"></p>` : ''}
+    `;
+    
+    document.getElementById('infoTuteur').innerHTML = `
+        <p><strong>Nom :</strong> ${data.tuteur.nom}</p>
+        <p><strong>Fonction :</strong> ${data.tuteur.fonction || '—'}</p>
+        <p><strong>Portable :</strong> ${data.tuteur.tel}</p>
+        <p><strong>Email :</strong> ${data.tuteur.email}</p>
+        <p><strong>Contact préféré :</strong> ${data.tuteur.contactMode === 'whatsapp' ? '💬 WhatsApp' : data.tuteur.contactMode === 'email' ? '📧 Email' : '📞 Téléphone'}</p>
+    `;
+    
+    // Générer le QR code pour le tuteur
+    genererQRCodeTuteur();
+}
+
+// =============================================
+// QR CODE TUTEUR
+// =============================================
+function getLienTuteur() {
+    // URL de la page tuteur avec le code élève
+    var baseUrl = 'https://frigorx.github.io/PFMP/pfmp_tuteur.html';
+    return baseUrl + '?code=' + encodeURIComponent(data.code);
+}
+
+function genererQRCodeTuteur() {
+    var lien = getLienTuteur();
+    var container = document.getElementById('qrCodeTuteur');
+    
+    // Utiliser l'API QR Server pour générer le QR code
+    container.innerHTML = '<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' + encodeURIComponent(lien) + '" alt="QR Code Tuteur" style="display:block;">';
+}
+
+function envoyerLienTuteurWhatsApp() {
+    var lien = getLienTuteur();
+    var message = 'Bonjour ' + data.tuteur.nom + ',\n\n';
+    message += 'Voici le lien pour suivre mon stage :\n';
+    message += lien + '\n\n';
+    message += 'Code : ' + data.code + '\n';
+    message += 'Mot de passe : PFMP2026\n\n';
+    message += 'Merci !\n';
+    message += data.eleve.prenom + ' ' + data.eleve.nom;
+    
+    var tel = data.tuteur.tel.replace(/^0/, '33').replace(/\s/g, '');
+    window.open('https://wa.me/' + tel + '?text=' + encodeURIComponent(message), '_blank');
+}
+
+function envoyerLienTuteurEmail() {
+    var lien = getLienTuteur();
+    var sujet = 'Suivi de stage PFMP - ' + data.eleve.prenom + ' ' + data.eleve.nom;
+    var corps = 'Bonjour ' + data.tuteur.nom + ',\n\n';
+    corps += 'Voici le lien pour suivre mon stage :\n';
+    corps += lien + '\n\n';
+    corps += 'Code : ' + data.code + '\n';
+    corps += 'Mot de passe : PFMP2026\n\n';
+    corps += 'Merci pour votre accueil !\n\n';
+    corps += data.eleve.prenom + ' ' + data.eleve.nom + '\n';
+    corps += 'Lycée Professionnel Privé Jacques Raynaud';
+    
+    window.open('mailto:' + data.tuteur.email + '?subject=' + encodeURIComponent(sujet) + '&body=' + encodeURIComponent(corps), '_blank');
+}
+
+function copierLienTuteur() {
+    var lien = getLienTuteur();
+    var texte = 'Lien : ' + lien + '\nCode : ' + data.code + '\nMot de passe : PFMP2026';
+    
+    navigator.clipboard.writeText(texte).then(function() {
+        showToast('Lien copié !', 'success');
+    }).catch(function() {
+        // Fallback
+        var textarea = document.createElement('textarea');
+        textarea.value = texte;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Lien copié !', 'success');
+    });
+}
+
+// =============================================
+// TABS
+// =============================================
+function showTab(tabId) {
+    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + tabId).classList.add('active');
+}
+
+// =============================================
+// MODAL ACTIVITÉ
+// =============================================
+function openAddActivity() {
+    tempActivityPhotos = [];
+    selectedActivityType = null;
+    selectedAutonomy = null;
+    
+    document.getElementById('activityPhotos').innerHTML = '<div class="add-photo" onclick="addActivityPhoto()">+</div>';
+    document.querySelectorAll('.activity-type-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.autonomy-btn').forEach(b => b.classList.remove('selected'));
+    document.getElementById('activityComment').value = '';
+    
+    document.getElementById('modalActivity').classList.add('active');
+}
+
+function addActivityPhoto() {
+    document.getElementById('activityPhotoInput').click();
+}
+
+function handleActivityPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        tempActivityPhotos.push(e.target.result);
+        renderActivityPhotos();
+    };
+    reader.readAsDataURL(file);
+}
+
+function renderActivityPhotos() {
+    const container = document.getElementById('activityPhotos');
+    container.innerHTML = tempActivityPhotos.map((p, i) => `
+        <div class="photo-item">
+            <img src="${p}">
+            <button class="delete" onclick="removeActivityPhoto(${i})">×</button>
+        </div>
+    `).join('') + '<div class="add-photo" onclick="addActivityPhoto()">+</div>';
+}
+
+function removeActivityPhoto(index) {
+    tempActivityPhotos.splice(index, 1);
+    renderActivityPhotos();
+}
+
+function selectActivityType(el) {
+    document.querySelectorAll('.activity-type-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedActivityType = el.dataset.type;
+}
+
+function selectAutonomy(el) {
+    document.querySelectorAll('.autonomy-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedAutonomy = el.dataset.level;
+}
+
+function saveActivity() {
+    if (!selectedActivityType) {
+        showToast('Sélectionne un type d\'activité', 'error');
+        return;
+    }
+    if (!selectedAutonomy) {
+        showToast('Sélectionne ton niveau d\'autonomie', 'error');
+        return;
+    }
+    
+    const today = new Date();
+    const diffDays = Math.floor((today - STAGE_START) / (1000 * 60 * 60 * 24));
+    
+    const activity = {
+        id: Date.now(),
+        date: today.toISOString().split('T')[0],
+        dayIndex: Math.max(0, diffDays),
+        type: selectedActivityType,
+        autonomy: selectedAutonomy,
+        comment: document.getElementById('activityComment').value.trim(),
+        photos: tempActivityPhotos,
+        competences: ACTIVITY_COMPETENCES[selectedActivityType] || []
+    };
+    
+    data.activities.push(activity);
+    saveData();
+    
+    closeModal('modalActivity');
+    renderApp();
+    showToast('✓ Activité enregistrée !', 'success');
+}
+
+function deleteActivity(id) {
+    if (!confirm('Supprimer cette activité ?')) return;
+    data.activities = data.activities.filter(a => a.id !== id);
+    saveData();
+    renderApp();
+    showToast('Activité supprimée', 'success');
+}
+
+// =============================================
+// MODAL TÂCHE COMPLEXE
+// =============================================
+function openAddTask() {
+    tempTaskPhotos = [];
+    
+    document.getElementById('taskTitle').value = '';
+    document.getElementById('taskType').value = '';
+    document.getElementById('taskDescription').value = '';
+    document.getElementById('taskPhotos').innerHTML = '<div class="add-photo" onclick="addTaskPhoto()">+</div>';
+    
+    // Générer checkboxes compétences
+    document.getElementById('taskCompetences').innerHTML = COMPETENCES.map(c => `
+        <label class="competence-item">
+            <input type="checkbox" value="${c.code}">
+            <span class="code">${c.code}</span>
+            <span class="label">${c.label}</span>
+        </label>
+    `).join('');
+    
+    document.getElementById('modalTask').classList.add('active');
+}
+
+function addTaskPhoto() {
+    document.getElementById('taskPhotoInput').click();
+}
+
+function handleTaskPhoto(event) {
+    const files = event.target.files;
+    for (let file of files) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            tempTaskPhotos.push(e.target.result);
+            renderTaskPhotos();
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function renderTaskPhotos() {
+    const container = document.getElementById('taskPhotos');
+    container.innerHTML = tempTaskPhotos.map((p, i) => `
+        <div class="photo-item">
+            <img src="${p}">
+            <button class="delete" onclick="removeTaskPhoto(${i})">×</button>
+        </div>
+    `).join('') + '<div class="add-photo" onclick="addTaskPhoto()">+</div>';
+}
+
+function removeTaskPhoto(index) {
+    tempTaskPhotos.splice(index, 1);
+    renderTaskPhotos();
+}
+
+function saveTask() {
+    const title = document.getElementById('taskTitle').value.trim();
+    if (!title) {
+        showToast('Entre un titre', 'error');
+        return;
+    }
+    
+    const selectedComps = [];
+    document.querySelectorAll('#taskCompetences input:checked').forEach(cb => {
+        selectedComps.push(cb.value);
+    });
+    
+    const task = {
+        id: Date.now(),
+        title: title,
+        type: document.getElementById('taskType').value,
+        description: document.getElementById('taskDescription').value.trim(),
+        photos: tempTaskPhotos,
+        competences: selectedComps,
+        status: 'draft',
+        createdAt: new Date().toISOString().split('T')[0]
+    };
+    
+    data.tasks.push(task);
+    saveData();
+    
+    closeModal('modalTask');
+    renderApp();
+    showToast('🎯 Tâche enregistrée !', 'success');
+}
+
+// =============================================
+// EXPORT
+// =============================================
+function exportPearltrees() {
+    exportJSON();
+    setTimeout(() => {
+        if (confirm('Fichier téléchargé !\n\nOuvrir Pearltrees pour déposer ?')) {
+            window.open(PEARLTREES_URL, '_blank');
+        }
+    }, 500);
+}
+
+function exportJSON() {
+    const exportData = {
+        version: '3.0',
+        type: 'pfmp_eleve',
+        exportDate: new Date().toISOString(),
+        code: currentCode,
+        ...data
+    };
+    
+    const filename = `PFMP_${data.eleve.nom}_${data.eleve.prenom}.json`;
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('Fichier telecharge', 'success');
+}
+
+// =============================================
+// DRIVE
+// =============================================
+function renderDriveSection() {
+    const lienDrive = localStorage.getItem('pfmp_drive_' + currentCode);
+    
+    if (lienDrive) {
+        document.getElementById('driveNotConfigured').style.display = 'none';
+        document.getElementById('driveConfigured').style.display = 'block';
+    } else {
+        document.getElementById('driveNotConfigured').style.display = 'block';
+        document.getElementById('driveConfigured').style.display = 'none';
+    }
+}
+
+function saveLienDrive() {
+    const lien = document.getElementById('inputLienDrive').value.trim();
+    
+    if (!lien) {
+        showToast('Colle ton lien Drive', 'error');
+        return;
+    }
+    
+    if (!lien.includes('drive.google.com')) {
+        showToast('Ce lien ne semble pas etre un lien Drive', 'error');
+        return;
+    }
+    
+    localStorage.setItem('pfmp_drive_' + currentCode, lien);
+    renderDriveSection();
+    showToast('Lien Drive enregistre !', 'success');
+}
+
+function ouvrirDrive() {
+    const lien = localStorage.getItem('pfmp_drive_' + currentCode);
+    
+    if (lien) {
+        window.open(lien, '_blank');
+    } else {
+        showToast('Configure ton lien Drive d\'abord', 'error');
+    }
+}
+
+function resetLienDrive() {
+    localStorage.removeItem('pfmp_drive_' + currentCode);
+    document.getElementById('inputLienDrive').value = '';
+    renderDriveSection();
+}
+
+function exportPhotosZip() {
+    // Collecter toutes les photos
+    let allPhotos = [];
+    
+    data.activities.forEach(a => {
+        if (a.photos && a.photos.length > 0) {
+            allPhotos = allPhotos.concat(a.photos);
+        }
+    });
+    
+    data.tasks.forEach(t => {
+        if (t.photos && t.photos.length > 0) {
+            allPhotos = allPhotos.concat(t.photos);
+        }
+    });
+    
+    if (allPhotos.length === 0) {
+        showToast('Aucune photo a exporter', 'error');
+        return;
+    }
+    
+    // Pour l'instant, on télécharge chaque photo individuellement
+    showToast(allPhotos.length + ' photo(s) - ouvre ton Drive pour les deposer', 'success');
+    
+    // Ouvrir le Drive
+    setTimeout(function() {
+        ouvrirDrive();
+    }, 1500);
+}
+
+function exportPDF() {
+    showToast('Fonction à venir...', 'error');
+}
+
+// =============================================
+// STORAGE
+// =============================================
+function loadData() {
+    const saved = localStorage.getItem('pfmp_eleve_' + currentCode);
+    if (saved) {
+        data = JSON.parse(saved);
+    }
+    // Toujours s'assurer que data.code est défini
+    data.code = currentCode;
+}
+
+function saveData() {
+    localStorage.setItem('pfmp_eleve_' + currentCode, JSON.stringify(data));
+}
+
+// =============================================
+// UTILS
+// =============================================
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+}
+
+function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = `toast ${type} show`;
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function editSetup() {
+    // Pré-remplir les champs
+    document.getElementById('setupNom').value = data.eleve.nom;
+    document.getElementById('setupPrenom').value = data.eleve.prenom;
+    document.getElementById('setupClasse').value = data.eleve.classe;
+    document.getElementById('setupTel').value = data.eleve.tel;
+    
+    document.getElementById('setupEntreprise').value = data.entreprise.nom;
+    document.getElementById('setupAdresse').value = data.entreprise.adresse;
+    document.getElementById('setupSecteur').value = data.entreprise.secteur;
+    document.getElementById('setupEntTel').value = data.entreprise.tel;
+    document.getElementById('setupEntEmail').value = data.entreprise.email;
+    
+    document.getElementById('setupTuteurNom').value = data.tuteur.nom;
+    document.getElementById('setupTuteurFonction').value = data.tuteur.fonction;
+    document.getElementById('setupTuteurTel').value = data.tuteur.tel;
+    document.getElementById('setupTuteurEmail').value = data.tuteur.email;
+    
+    showScreen('setupScreen');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1b3a63">
+    <title>👷 PFMP Stage — Tuteur</title>
+    <style>
+        :root {
+            --bleu: #1b3a63;
+            --bleu-clair: #2d5a8c;
+            --orange: #ff6b35;
+            --vert: #27ae60;
+            --rouge: #e74c3c;
+            --jaune: #f39c12;
+            --violet: #9b59b6;
+            --gris: #6c757d;
+            --gris-clair: #f8f9fa;
+            --blanc: #ffffff;
+            --radius: 12px;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            background: var(--gris-clair);
+            min-height: 100vh;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        /* === ÉCRANS === */
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: block; }
+        
+        /* === LOGIN === */
+        .login-screen {
+            background: linear-gradient(135deg, var(--bleu) 0%, var(--bleu-clair) 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-box {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .login-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .login-logos img { height: 40px; }
+        
+        .login-badge {
+            display: inline-block;
+            background: var(--orange);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .login-title { font-size: 1.3rem; font-weight: 700; color: var(--bleu); margin-bottom: 5px; }
+        .login-subtitle { font-size: 0.85rem; color: var(--gris); margin-bottom: 25px; }
+        
+        .login-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            border-radius: var(--radius);
+            font-family: 'Consolas', monospace;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        
+        .login-input:focus { outline: none; border-color: var(--bleu); }
+        
+        .login-input-small {
+            font-size: 0.95rem;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: var(--bleu);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover { background: var(--bleu-clair); }
+        
+        .demo-btn {
+            margin-top: 15px;
+            padding: 12px;
+            background: none;
+            border: 2px dashed var(--orange);
+            color: var(--orange);
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .login-footer {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: var(--gris);
+            line-height: 1.4;
+        }
+        
+        .login-help {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(27,58,99,0.05);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        /* === HEADER === */
+        .header {
+            background: linear-gradient(135deg, var(--bleu), var(--bleu-clair));
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 0.95rem; font-weight: 600; }
+        .header-badge {
+            background: var(--orange);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .header-info {
+            margin-top: 10px;
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        /* === PROGRESS === */
+        .progress-bar {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+            padding: 15px 20px;
+        }
+        
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .progress-step::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #e0e0e0;
+        }
+        
+        .progress-step:last-child::after { display: none; }
+        
+        .progress-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin: 0 auto 5px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .progress-step.active .progress-dot { background: var(--orange); color: white; }
+        .progress-step.done .progress-dot { background: var(--vert); color: white; }
+        .progress-step.done::after { background: var(--vert); }
+        
+        .progress-label { font-size: 0.65rem; color: var(--gris); }
+        .progress-step.active .progress-label { color: var(--bleu); font-weight: 600; }
+        
+        /* === MAIN === */
+        .main { padding: 20px; max-width: 600px; margin: 0 auto; padding-bottom: 100px; }
+        
+        /* === CARDS === */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--bleu);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gris-clair);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--gris);
+            margin-bottom: 15px;
+        }
+        
+        /* === FORM === */
+        .form-group { margin-bottom: 15px; }
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #444;
+        }
+        .form-group .required { color: var(--rouge); }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--bleu);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .form-hint { font-size: 0.7rem; color: var(--gris); margin-top: 4px; }
+        
+        /* === BUTTONS === */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary { background: var(--bleu); color: white; }
+        .btn-success { background: var(--vert); color: white; }
+        .btn-orange { background: var(--orange); color: white; }
+        .btn-outline { background: white; border: 2px solid var(--bleu); color: var(--bleu); }
+        
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .btn-row { display: flex; gap: 10px; }
+        .btn-row .btn { margin: 0; flex: 1; }
+        
+        /* === MODE CHOICE === */
+        .mode-choice {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .mode-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .mode-card:hover { border-color: var(--bleu-clair); }
+        .mode-card.selected { border-color: var(--vert); background: rgba(39,174,96,0.05); }
+        
+        .mode-card .icon { font-size: 2rem; margin-bottom: 10px; }
+        .mode-card .title { font-weight: 700; color: var(--bleu); margin-bottom: 5px; }
+        .mode-card .desc { font-size: 0.75rem; color: var(--gris); }
+        .mode-card .time { font-size: 0.7rem; color: var(--orange); font-weight: 600; margin-top: 8px; }
+        
+        /* === CONTACT OPTIONS === */
+        .contact-options { display: flex; flex-direction: column; gap: 10px; }
+        
+        .contact-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: var(--gris-clair);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .contact-option:hover { border-color: var(--bleu-clair); }
+        .contact-option.selected { border-color: var(--vert); background: rgba(39,174,96,0.1); }
+        
+        .contact-option .icon { font-size: 1.4rem; }
+        .contact-option .info { flex: 1; }
+        .contact-option .title { font-weight: 600; font-size: 0.9rem; }
+        .contact-option .desc { font-size: 0.7rem; color: var(--gris); }
+        
+        /* === COMPETENCES === */
+        .competences-grid { display: flex; flex-direction: column; gap: 10px; }
+        
+        .competence-row {
+            display: flex;
+            align-items: center;
+            background: var(--gris-clair);
+            border-radius: 10px;
+            padding: 10px 15px;
+            gap: 10px;
+        }
+        
+        .competence-row .code {
+            font-weight: 700;
+            color: var(--bleu);
+            min-width: 45px;
+            font-size: 0.8rem;
+        }
+        
+        .competence-row .label {
+            flex: 1;
+            font-size: 0.8rem;
+            color: #444;
+        }
+        
+        .competence-row .levels {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .level-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .level-btn:hover { border-color: var(--bleu); }
+        .level-btn.selected { border-color: var(--vert); background: var(--vert); color: white; }
+        .level-btn[data-level="0"].selected { background: #ccc; border-color: #aaa; }
+        .level-btn[data-level="1"].selected { background: var(--jaune); border-color: var(--jaune); }
+        .level-btn[data-level="2"].selected { background: var(--bleu); border-color: var(--bleu); }
+        .level-btn[data-level="3"].selected { background: var(--vert); border-color: var(--vert); }
+        
+        /* === ACTIVITY SKILLS (mode simple) === */
+        .skill-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .skill-item {
+            padding: 12px;
+            background: var(--gris-clair);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .skill-item:hover { border-color: var(--bleu-clair); }
+        .skill-item.selected { border-color: var(--vert); background: rgba(39,174,96,0.1); }
+        
+        .skill-item .icon { font-size: 1.3rem; display: block; text-align: center; margin-bottom: 5px; }
+        .skill-item .label { font-size: 0.75rem; font-weight: 600; text-align: center; display: block; }
+        
+        .skill-levels {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+        
+        .skill-level {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.6rem;
+            background: white;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        
+        .skill-level:hover { border-color: var(--bleu); }
+        .skill-level.selected { background: var(--vert); color: white; border-color: var(--vert); }
+        
+        /* === RATING === */
+        .rating-group { margin-bottom: 15px; }
+        .rating-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 8px; display: block; }
+        
+        .rating-stars {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .rating-star {
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #ddd;
+            transition: all 0.2s;
+        }
+        
+        .rating-star:hover, .rating-star.active { color: var(--jaune); }
+        
+        /* === PRESENCE === */
+        .presence-week {
+            display: flex;
+            justify-content: space-between;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .presence-day {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .presence-day .label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--gris);
+            margin-bottom: 5px;
+        }
+        
+        .presence-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .presence-btn.present { background: var(--vert); border-color: var(--vert); color: white; }
+        .presence-btn.absent { background: var(--rouge); border-color: var(--rouge); color: white; }
+        
+        /* === SIGNATURE === */
+        .signature-pad {
+            width: 100%;
+            height: 150px;
+            border: 2px solid #ddd;
+            border-radius: var(--radius);
+            background: white;
+            cursor: crosshair;
+        }
+        
+        .signature-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+        
+        .signature-clear {
+            background: none;
+            border: none;
+            color: var(--gris);
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        /* === INFO BOX === */
+        .info-box {
+            background: rgba(27,58,99,0.05);
+            border-left: 4px solid var(--bleu);
+            padding: 12px 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 15px;
+        }
+        
+        .info-box p { font-size: 0.8rem; color: #444; line-height: 1.5; }
+        
+        .info-box.warning {
+            background: rgba(243,156,18,0.1);
+            border-left-color: var(--jaune);
+        }
+        
+        /* === RECAP === */
+        .recap-section {
+            background: var(--gris-clair);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .recap-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gris);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .recap-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.85rem;
+        }
+        
+        .recap-item:last-child { border-bottom: none; }
+        .recap-item .label { color: var(--gris); }
+        .recap-item .value { font-weight: 600; }
+        
+        /* === SUCCESS === */
+        .success-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .success-icon { font-size: 4rem; margin-bottom: 20px; }
+        .success-title { font-size: 1.5rem; font-weight: 700; color: var(--vert); margin-bottom: 10px; }
+        .success-text { color: var(--gris); margin-bottom: 30px; line-height: 1.6; }
+        
+        /* === SECTION === */
+        .section { display: none; }
+        .section.active { display: block; }
+        
+        /* === TOAST === */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--bleu);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+        }
+        
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: var(--vert); }
+        .toast.error { background: var(--rouge); }
+        
+        /* === NAV BOTTOM === */
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #eee;
+            padding: 10px 20px;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            display: flex;
+            gap: 10px;
+        }
+        
+        .nav-bottom .btn { margin: 0; flex: 1; }
+        
+        /* === LEVELS LEGEND === */
+        .levels-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 10px;
+            background: var(--gris-clair);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.7rem;
+        }
+        
+        .levels-legend span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.l0 { background: #ccc; }
+        .legend-dot.l1 { background: var(--jaune); }
+        .legend-dot.l2 { background: var(--bleu); }
+        .legend-dot.l3 { background: var(--vert); }
+    </style>
+</head>
+<body>
+
+<!-- ========================================
+     ÉCRAN CONNEXION
+     ======================================== -->
+<div class="screen login-screen active" id="loginScreen">
+    <div class="login-box">
+        <div class="login-logos">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjQwIiB2aWV3Qm94PSIwIDAgMTIwIDQwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUiIHk9IjI1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMWIzYTYzIj5FUVVBVElPPC90ZXh0Pjx0ZXh0IHg9IjUiIHk9IjM1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iIzY2NiI+Q3LDqWF0ZXVyIGQnYXZlbmlyPC90ZXh0Pjwvc3ZnPg==" alt="EQUATIO">
+        </div>
+        
+        <div class="login-badge">👷 ESPACE TUTEUR</div>
+        <div class="login-title">Suivi de stage PFMP</div>
+        <div class="login-subtitle">Évaluation du stagiaire</div>
+        
+        <input type="text" class="login-input" id="codeInput" placeholder="CODE ÉLÈVE" maxlength="12">
+        <input type="password" class="login-input login-input-small" id="passwordInput" placeholder="Mot de passe">
+        
+        <button class="login-btn" onclick="login()">Accéder à l'évaluation</button>
+        
+        <button class="demo-btn" onclick="loginDemo()">🎮 Mode Démo</button>
+        
+        <div class="login-help">
+            <strong>💡 Code élève</strong> = donné par le stagiaire<br>
+            <strong>🔑 Mot de passe</strong> = PFMP2026
+        </div>
+        
+        <div class="login-footer">
+            <strong>Lycée Professionnel Privé Jacques Raynaud</strong><br>
+            Campus EQUATIO — 59 Trav. Charles Susini — 13013 Marseille<br>
+            📞 04 91 66 39 40 — <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4330262031263722293103252c312e22372a2c2d2e26372a26316d2531">[email&#160;protected]</a>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================
+     ÉCRAN PRINCIPAL
+     ======================================== -->
+<div class="screen" id="appScreen">
+    <div class="header">
+        <div class="header-top">
+            <h1>👷 Évaluation Tuteur</h1>
+            <span class="header-badge">⏱️ ~3 min</span>
+        </div>
+        <div class="header-info" id="headerInfo">
+            Stagiaire : Martin DUPONT — FRIGOTECH
+        </div>
+    </div>
+    
+    <div class="progress-bar" id="progressBar">
+        <div class="progress-step active" data-step="1">
+            <div class="progress-dot">1</div>
+            <div class="progress-label">Infos</div>
+        </div>
+        <div class="progress-step" data-step="2">
+            <div class="progress-dot">2</div>
+            <div class="progress-label">Évaluation</div>
+        </div>
+        <div class="progress-step" data-step="3">
+            <div class="progress-dot">3</div>
+            <div class="progress-label">Bilan</div>
+        </div>
+        <div class="progress-step" data-step="4">
+            <div class="progress-dot">4</div>
+            <div class="progress-label">Signature</div>
+        </div>
+    </div>
+    
+    <main class="main">
+        <!-- ========================================
+             ÉTAPE 1 : INFOS TUTEUR/ENTREPRISE
+             ======================================== -->
+        <div class="section active" id="step1">
+            <div class="card">
+                <div class="card-title">🏢 Informations entreprise</div>
+                
+                <div class="form-group">
+                    <label>Nom de l'entreprise <span class="required">*</span></label>
+                    <input type="text" id="entrepriseNom" placeholder="FRIGOTECH SARL">
+                </div>
+                
+                <div class="form-group">
+                    <label>Secteur d'activité</label>
+                    <select id="entrepriseSecteur">
+                        <option value="">Sélectionnez...</option>
+                        <option value="Frigoriste">Frigoriste</option>
+                        <option value="Climatisation / PAC">Climatisation / PAC</option>
+                        <option value="Plomberie / Chauffage">Plomberie / Chauffage</option>
+                        <option value="Électricité">Électricité</option>
+                        <option value="Électroménager">Électroménager</option>
+                        <option value="Multi-techniques">Multi-techniques / Multi-services</option>
+                        <option value="Autre">Autre</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">👷 Vos coordonnées</div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Votre nom <span class="required">*</span></label>
+                        <input type="text" id="tuteurNom" placeholder="M. Bernard">
+                    </div>
+                    <div class="form-group">
+                        <label>Fonction</label>
+                        <input type="text" id="tuteurFonction" placeholder="Chef d'équipe">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>📱 Téléphone portable <span class="required">*</span></label>
+                    <input type="tel" id="tuteurTel" placeholder="06 XX XX XX XX">
+                </div>
+                
+                <div class="form-group">
+                    <label>📧 Email <span class="required">*</span></label>
+                    <input type="email" id="tuteurEmail" placeholder="tuteur@entreprise.fr">
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📬 Préférence de contact</div>
+                <div class="card-subtitle">Comment souhaitez-vous recevoir les rappels de suivi ?</div>
+                
+                <div class="contact-options">
+                    <div class="contact-option selected" data-mode="whatsapp" onclick="selectContactMode(this)">
+                        <span class="icon">💬</span>
+                        <div class="info">
+                            <div class="title">WhatsApp</div>
+                            <div class="desc">Rappel + lien direct (recommandé)</div>
+                        </div>
+                    </div>
+                    <div class="contact-option" data-mode="sms" onclick="selectContactMode(this)">
+                        <span class="icon">📱</span>
+                        <div class="info">
+                            <div class="title">SMS</div>
+                            <div class="desc">Message texte avec lien</div>
+                        </div>
+                    </div>
+                    <div class="contact-option" data-mode="email" onclick="selectContactMode(this)">
+                        <span class="icon">📧</span>
+                        <div class="info">
+                            <div class="title">Email</div>
+                            <div class="desc">Email avec lien de validation</div>
+                        </div>
+                    </div>
+                    <div class="contact-option" data-mode="phone" onclick="selectContactMode(this)">
+                        <span class="icon">📞</span>
+                        <div class="info">
+                            <div class="title">Téléphone</div>
+                            <div class="desc">Le professeur vous appellera</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="nextStep(2)">Suivant →</button>
+        </div>
+        
+        <!-- ========================================
+             ÉTAPE 2 : ÉVALUATION
+             ======================================== -->
+        <div class="section" id="step2">
+            <div class="info-box">
+                <p><strong>Choisissez le mode d'évaluation</strong> qui vous convient le mieux.</p>
+            </div>
+            
+            <div class="mode-choice">
+                <div class="mode-card" data-mode="simple" onclick="selectEvalMode(this)">
+                    <div class="icon">🔧</div>
+                    <div class="title">Mode Activités</div>
+                    <div class="desc">Évaluez les activités réalisées (brasage, câblage...)</div>
+                    <div class="time">⏱️ ~2 min</div>
+                </div>
+                <div class="mode-card" data-mode="competences" onclick="selectEvalMode(this)">
+                    <div class="icon">📋</div>
+                    <div class="title">Mode Compétences</div>
+                    <div class="desc">Grille officielle EP2 (C3.1 à C3.9)</div>
+                    <div class="time">⏱️ ~3 min</div>
+                </div>
+            </div>
+            
+            <!-- MODE SIMPLE (ACTIVITÉS) -->
+            <div id="evalSimple" style="display:none;">
+                <div class="card">
+                    <div class="card-title">🔧 Activités observées</div>
+                    <div class="card-subtitle">Cochez ce que le stagiaire a réalisé et son niveau</div>
+                    
+                    <div class="skill-grid" id="skillGrid">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MODE COMPÉTENCES EP2 -->
+            <div id="evalCompetences" style="display:none;">
+                <div class="card">
+                    <div class="card-title">📋 Compétences EP2 — CAP IFCA</div>
+                    
+                    <div class="levels-legend">
+                        <span><span class="legend-dot l0"></span> Non vu</span>
+                        <span><span class="legend-dot l1"></span> Observé</span>
+                        <span><span class="legend-dot l2"></span> Fait</span>
+                        <span><span class="legend-dot l3"></span> Maîtrise</span>
+                    </div>
+                    
+                    <div class="competences-grid" id="competencesGrid">
+                        <!-- Généré par JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-row">
+                <button class="btn btn-outline" onclick="prevStep(1)">← Retour</button>
+                <button class="btn btn-primary" onclick="nextStep(3)" id="btnStep2Next" disabled>Suivant →</button>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             ÉTAPE 3 : BILAN COMPORTEMENT
+             ======================================== -->
+        <div class="section" id="step3">
+            <div class="card">
+                <div class="card-title">⭐ Bilan comportement</div>
+                
+                <div class="rating-group">
+                    <span class="rating-label">Ponctualité / Assiduité</span>
+                    <div class="rating-stars" data-rating="ponctualite">
+                        <span class="rating-star" data-value="1" onclick="setRating('ponctualite', 1)">★</span>
+                        <span class="rating-star" data-value="2" onclick="setRating('ponctualite', 2)">★</span>
+                        <span class="rating-star" data-value="3" onclick="setRating('ponctualite', 3)">★</span>
+                        <span class="rating-star" data-value="4" onclick="setRating('ponctualite', 4)">★</span>
+                        <span class="rating-star" data-value="5" onclick="setRating('ponctualite', 5)">★</span>
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <span class="rating-label">Motivation / Implication</span>
+                    <div class="rating-stars" data-rating="motivation">
+                        <span class="rating-star" data-value="1" onclick="setRating('motivation', 1)">★</span>
+                        <span class="rating-star" data-value="2" onclick="setRating('motivation', 2)">★</span>
+                        <span class="rating-star" data-value="3" onclick="setRating('motivation', 3)">★</span>
+                        <span class="rating-star" data-value="4" onclick="setRating('motivation', 4)">★</span>
+                        <span class="rating-star" data-value="5" onclick="setRating('motivation', 5)">★</span>
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <span class="rating-label">Écoute / Respect des consignes</span>
+                    <div class="rating-stars" data-rating="ecoute">
+                        <span class="rating-star" data-value="1" onclick="setRating('ecoute', 1)">★</span>
+                        <span class="rating-star" data-value="2" onclick="setRating('ecoute', 2)">★</span>
+                        <span class="rating-star" data-value="3" onclick="setRating('ecoute', 3)">★</span>
+                        <span class="rating-star" data-value="4" onclick="setRating('ecoute', 4)">★</span>
+                        <span class="rating-star" data-value="5" onclick="setRating('ecoute', 5)">★</span>
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <span class="rating-label">Respect des règles de sécurité</span>
+                    <div class="rating-stars" data-rating="securite">
+                        <span class="rating-star" data-value="1" onclick="setRating('securite', 1)">★</span>
+                        <span class="rating-star" data-value="2" onclick="setRating('securite', 2)">★</span>
+                        <span class="rating-star" data-value="3" onclick="setRating('securite', 3)">★</span>
+                        <span class="rating-star" data-value="4" onclick="setRating('securite', 4)">★</span>
+                        <span class="rating-star" data-value="5" onclick="setRating('securite', 5)">★</span>
+                    </div>
+                </div>
+                
+                <div class="rating-group">
+                    <span class="rating-label">Intégration dans l'équipe</span>
+                    <div class="rating-stars" data-rating="integration">
+                        <span class="rating-star" data-value="1" onclick="setRating('integration', 1)">★</span>
+                        <span class="rating-star" data-value="2" onclick="setRating('integration', 2)">★</span>
+                        <span class="rating-star" data-value="3" onclick="setRating('integration', 3)">★</span>
+                        <span class="rating-star" data-value="4" onclick="setRating('integration', 4)">★</span>
+                        <span class="rating-star" data-value="5" onclick="setRating('integration', 5)">★</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📅 Présence cette semaine</div>
+                
+                <div class="presence-week" id="presenceWeek">
+                    <div class="presence-day">
+                        <div class="label">Lun</div>
+                        <button class="presence-btn present" data-day="lun" onclick="togglePresence(this)">✓</button>
+                    </div>
+                    <div class="presence-day">
+                        <div class="label">Mar</div>
+                        <button class="presence-btn present" data-day="mar" onclick="togglePresence(this)">✓</button>
+                    </div>
+                    <div class="presence-day">
+                        <div class="label">Mer</div>
+                        <button class="presence-btn present" data-day="mer" onclick="togglePresence(this)">✓</button>
+                    </div>
+                    <div class="presence-day">
+                        <div class="label">Jeu</div>
+                        <button class="presence-btn present" data-day="jeu" onclick="togglePresence(this)">✓</button>
+                    </div>
+                    <div class="presence-day">
+                        <div class="label">Ven</div>
+                        <button class="presence-btn present" data-day="ven" onclick="togglePresence(this)">✓</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">💬 Commentaire</div>
+                <div class="form-group">
+                    <textarea id="commentaire" rows="4" placeholder="Points forts, axes d'amélioration, observations particulières..."></textarea>
+                </div>
+            </div>
+            
+            <div class="btn-row">
+                <button class="btn btn-outline" onclick="prevStep(2)">← Retour</button>
+                <button class="btn btn-primary" onclick="nextStep(4)">Suivant →</button>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             ÉTAPE 4 : RÉCAPITULATIF & SIGNATURE
+             ======================================== -->
+        <div class="section" id="step4">
+            <div class="card">
+                <div class="card-title">📋 Récapitulatif</div>
+                
+                <div class="recap-section">
+                    <div class="recap-title">Entreprise</div>
+                    <div class="recap-item">
+                        <span class="label">Nom</span>
+                        <span class="value" id="recapEntreprise">—</span>
+                    </div>
+                    <div class="recap-item">
+                        <span class="label">Tuteur</span>
+                        <span class="value" id="recapTuteur">—</span>
+                    </div>
+                </div>
+                
+                <div class="recap-section">
+                    <div class="recap-title">Évaluation</div>
+                    <div class="recap-item">
+                        <span class="label">Mode</span>
+                        <span class="value" id="recapMode">—</span>
+                    </div>
+                    <div class="recap-item">
+                        <span class="label">Compétences évaluées</span>
+                        <span class="value" id="recapCompetences">—</span>
+                    </div>
+                </div>
+                
+                <div class="recap-section">
+                    <div class="recap-title">Comportement</div>
+                    <div id="recapRatings"></div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">✍️ Signature</div>
+                <div class="card-subtitle">Signez dans le cadre ci-dessous</div>
+                
+                <canvas class="signature-pad" id="signaturePad"></canvas>
+                <div class="signature-actions">
+                    <button class="signature-clear" onclick="clearSignature()">🗑️ Effacer</button>
+                </div>
+            </div>
+            
+            <div class="info-box warning">
+                <p>⚠️ En validant, vous confirmez que les informations saisies sont exactes.</p>
+            </div>
+            
+            <div class="btn-row">
+                <button class="btn btn-outline" onclick="prevStep(3)">← Retour</button>
+                <button class="btn btn-success" onclick="submitEvaluation()">✓ Valider l'évaluation</button>
+            </div>
+        </div>
+        
+        <!-- ========================================
+             ÉCRAN SUCCÈS
+             ======================================== -->
+        <div class="section" id="stepSuccess">
+            <div class="success-screen">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">Merci !</div>
+                <div class="success-text">
+                    Votre évaluation a été enregistrée avec succès.<br><br>
+                    Le professeur sera notifié et pourra consulter vos retours.<br><br>
+                    <strong>Merci pour votre engagement dans la formation de nos élèves !</strong>
+                </div>
+                
+                <button class="btn btn-primary" onclick="exportData()">💾 Télécharger une copie</button>
+                <button class="btn btn-outline" onclick="location.reload()">🔄 Nouvelle évaluation</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// =============================================
+// CONFIGURATION
+// =============================================
+const DEFAULT_PASSWORD = 'PFMP2026';
+const PEARLTREES_URL = 'https://www.pearltrees.com/private/id102655033?access=47af96018d7.61e6439.08abcff2f310b27abea01bd0388158ec';
+
+// Compétences EP2 CAP IFCA
+const COMPETENCES = [
+    { code: 'C1.2', label: 'Communiquer, rendre compte' },
+    { code: 'C2.1', label: 'Préparer les opérations' },
+    { code: 'C3.1', label: 'Organiser son intervention' },
+    { code: 'C3.2', label: 'Identifier les risques, appliquer les mesures de prévention' },
+    { code: 'C3.3', label: 'Implanter, poser les équipements' },
+    { code: 'C3.4', label: 'Façonner, raccorder les circuits fluidiques' },
+    { code: 'C3.5', label: 'Poser les réseaux aérauliques' },
+    { code: 'C3.6', label: 'Raccorder les équipements électriques' },
+    { code: 'C3.7', label: 'Réaliser les mesures, les contrôles' },
+    { code: 'C3.8', label: 'Régler, paramétrer la régulation' },
+    { code: 'C3.9', label: 'Réaliser les opérations de mise en service' }
+];
+
+// Activités simplifiées
+const SKILLS = [
+    { id: 'pose', icon: '🔧', label: 'Pose / Montage', comps: ['C3.1', 'C3.3'] },
+    { id: 'cablage', icon: '⚡', label: 'Câblage électrique', comps: ['C3.6'] },
+    { id: 'brasage', icon: '🔥', label: 'Brasage', comps: ['C3.4'] },
+    { id: 'cintrage', icon: '📐', label: 'Cintrage / Dudgeon', comps: ['C3.4'] },
+    { id: 'tirage', icon: '🌀', label: 'Tirage au vide', comps: ['C3.9'] },
+    { id: 'charge', icon: '❄️', label: 'Charge fluide', comps: ['C3.9'] },
+    { id: 'etancheite', icon: '🔍', label: 'Contrôle étanchéité', comps: ['C3.7', 'C3.9'] },
+    { id: 'mesures', icon: '📊', label: 'Mesures T°/P', comps: ['C3.7'] },
+    { id: 'maintenance', icon: '🛠️', label: 'Maintenance', comps: ['C3.1', 'C3.7'] },
+    { id: 'depannage', icon: '🚨', label: 'Dépannage', comps: ['C3.2', 'C3.7'] },
+    { id: 'aeraulique', icon: '💨', label: 'Réseaux aérauliques', comps: ['C3.5'] },
+    { id: 'regulation', icon: '🎛️', label: 'Régulation', comps: ['C3.8'] }
+];
+
+// =============================================
+// DONNÉES
+// =============================================
+let currentCode = null;
+let eleveData = null;
+let data = {
+    entreprise: { nom: '', secteur: '' },
+    tuteur: { nom: '', fonction: '', tel: '', email: '', contactMode: 'whatsapp' },
+    evalMode: null,
+    skills: {},
+    competences: {},
+    ratings: { ponctualite: 0, motivation: 0, ecoute: 0, securite: 0, integration: 0 },
+    presence: { lun: true, mar: true, mer: true, jeu: true, ven: true },
+    commentaire: '',
+    signature: null,
+    dateValidation: null
+};
+
+let currentStep = 1;
+let signatureCtx = null;
+let isDrawing = false;
+
+// =============================================
+// INIT
+// =============================================
+document.addEventListener('DOMContentLoaded', () => {
+    initSignaturePad();
+    renderSkillGrid();
+    renderCompetencesGrid();
+});
+
+// =============================================
+// LOGIN
+// =============================================
+function login() {
+    const code = document.getElementById('codeInput').value.trim().toUpperCase();
+    const password = document.getElementById('passwordInput').value;
+    
+    if (!code) {
+        showToast('Entrez le code élève', 'error');
+        return;
+    }
+    
+    if (password !== DEFAULT_PASSWORD) {
+        showToast('Mot de passe incorrect', 'error');
+        return;
+    }
+    
+    currentCode = code;
+    
+    // Charger données élève si existantes
+    const savedEleve = localStorage.getItem('pfmp_eleve_' + code);
+    if (savedEleve) {
+        eleveData = JSON.parse(savedEleve);
+        document.getElementById('headerInfo').textContent = 
+            `Stagiaire : ${eleveData.eleve.prenom} ${eleveData.eleve.nom} — ${eleveData.entreprise.nom}`;
+        
+        // Pré-remplir avec les données de l'élève
+        document.getElementById('entrepriseNom').value = eleveData.entreprise.nom || '';
+        document.getElementById('entrepriseSecteur').value = eleveData.entreprise.secteur || '';
+        document.getElementById('tuteurNom').value = eleveData.tuteur.nom || '';
+        document.getElementById('tuteurFonction').value = eleveData.tuteur.fonction || '';
+        document.getElementById('tuteurTel').value = eleveData.tuteur.tel || '';
+        document.getElementById('tuteurEmail').value = eleveData.tuteur.email || '';
+    }
+    
+    showScreen('appScreen');
+}
+
+function loginDemo() {
+    currentCode = 'DEMO-123456';
+    eleveData = {
+        eleve: { nom: 'DUPONT', prenom: 'Martin', classe: 'CAP IFCA 1' },
+        entreprise: { nom: 'FRIGOTECH SARL', secteur: 'Climatisation / PAC' },
+        tuteur: { nom: 'M. Bernard', fonction: 'Chef d\'équipe', tel: '0698765432', email: 'bernard@frigotech.fr' }
+    };
+    
+    document.getElementById('headerInfo').textContent = 'Stagiaire : Martin DUPONT — FRIGOTECH SARL';
+    document.getElementById('entrepriseNom').value = 'FRIGOTECH SARL';
+    document.getElementById('entrepriseSecteur').value = 'Climatisation / PAC';
+    document.getElementById('tuteurNom').value = 'M. Bernard';
+    document.getElementById('tuteurFonction').value = 'Chef d\'équipe';
+    document.getElementById('tuteurTel').value = '0698765432';
+    document.getElementById('tuteurEmail').value = 'bernard@frigotech.fr';
+    
+    showScreen('appScreen');
+    showToast('🎮 Mode démo activé', 'success');
+}
+
+// =============================================
+// ÉCRANS
+// =============================================
+function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+}
+
+// =============================================
+// NAVIGATION ÉTAPES
+// =============================================
+function nextStep(step) {
+    // Validation
+    if (step === 2) {
+        if (!document.getElementById('entrepriseNom').value.trim()) {
+            showToast('Entrez le nom de l\'entreprise', 'error');
+            return;
+        }
+        if (!document.getElementById('tuteurNom').value.trim()) {
+            showToast('Entrez votre nom', 'error');
+            return;
+        }
+        if (!document.getElementById('tuteurTel').value.trim()) {
+            showToast('Entrez votre téléphone', 'error');
+            return;
+        }
+        if (!document.getElementById('tuteurEmail').value.trim()) {
+            showToast('Entrez votre email', 'error');
+            return;
+        }
+        
+        // Sauvegarder étape 1
+        data.entreprise.nom = document.getElementById('entrepriseNom').value.trim();
+        data.entreprise.secteur = document.getElementById('entrepriseSecteur').value;
+        data.tuteur.nom = document.getElementById('tuteurNom').value.trim();
+        data.tuteur.fonction = document.getElementById('tuteurFonction').value.trim();
+        data.tuteur.tel = document.getElementById('tuteurTel').value.replace(/\s/g, '');
+        data.tuteur.email = document.getElementById('tuteurEmail').value.trim();
+        
+        const selectedContact = document.querySelector('.contact-option.selected');
+        data.tuteur.contactMode = selectedContact ? selectedContact.dataset.mode : 'whatsapp';
+    }
+    
+    if (step === 3) {
+        if (!data.evalMode) {
+            showToast('Choisissez un mode d\'évaluation', 'error');
+            return;
+        }
+    }
+    
+    if (step === 4) {
+        // Sauvegarder étape 3
+        data.commentaire = document.getElementById('commentaire').value.trim();
+        
+        // Générer récapitulatif
+        renderRecap();
+    }
+    
+    goToStep(step);
+}
+
+function prevStep(step) {
+    goToStep(step);
+}
+
+function goToStep(step) {
+    currentStep = step;
+    
+    // Afficher section
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('step' + step).classList.add('active');
+    
+    // Mettre à jour progress bar
+    document.querySelectorAll('.progress-step').forEach(s => {
+        const stepNum = parseInt(s.dataset.step);
+        s.classList.remove('active', 'done');
+        if (stepNum < step) s.classList.add('done');
+        if (stepNum === step) s.classList.add('active');
+    });
+    
+    window.scrollTo(0, 0);
+}
+
+// =============================================
+// CONTACT MODE
+// =============================================
+function selectContactMode(el) {
+    document.querySelectorAll('.contact-option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+}
+
+// =============================================
+// MODE ÉVALUATION
+// =============================================
+function selectEvalMode(el) {
+    document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    
+    data.evalMode = el.dataset.mode;
+    
+    // Afficher le bon formulaire
+    document.getElementById('evalSimple').style.display = data.evalMode === 'simple' ? 'block' : 'none';
+    document.getElementById('evalCompetences').style.display = data.evalMode === 'competences' ? 'block' : 'none';
+    
+    // Activer bouton suivant
+    document.getElementById('btnStep2Next').disabled = false;
+}
+
+// =============================================
+// MODE SIMPLE (ACTIVITÉS)
+// =============================================
+function renderSkillGrid() {
+    const container = document.getElementById('skillGrid');
+    container.innerHTML = SKILLS.map(s => `
+        <div class="skill-item" data-skill="${s.id}" onclick="toggleSkill(this, '${s.id}')">
+            <span class="icon">${s.icon}</span>
+            <span class="label">${s.label}</span>
+            <div class="skill-levels" style="display:none;">
+                <span class="skill-level" data-level="1" onclick="event.stopPropagation(); setSkillLevel('${s.id}', 1, this)">👀</span>
+                <span class="skill-level" data-level="2" onclick="event.stopPropagation(); setSkillLevel('${s.id}', 2, this)">✓</span>
+                <span class="skill-level" data-level="3" onclick="event.stopPropagation(); setSkillLevel('${s.id}', 3, this)">⭐</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+function toggleSkill(el, skillId) {
+    el.classList.toggle('selected');
+    const levels = el.querySelector('.skill-levels');
+    
+    if (el.classList.contains('selected')) {
+        levels.style.display = 'flex';
+        data.skills[skillId] = 1; // Par défaut: observé
+        levels.querySelector('[data-level="1"]').classList.add('selected');
+    } else {
+        levels.style.display = 'none';
+        delete data.skills[skillId];
+        levels.querySelectorAll('.skill-level').forEach(l => l.classList.remove('selected'));
+    }
+}
+
+function setSkillLevel(skillId, level, el) {
+    const parent = el.parentElement;
+    parent.querySelectorAll('.skill-level').forEach(l => l.classList.remove('selected'));
+    el.classList.add('selected');
+    data.skills[skillId] = level;
+}
+
+// =============================================
+// MODE COMPÉTENCES EP2
+// =============================================
+function renderCompetencesGrid() {
+    const container = document.getElementById('competencesGrid');
+    container.innerHTML = COMPETENCES.map(c => `
+        <div class="competence-row" data-comp="${c.code}">
+            <span class="code">${c.code}</span>
+            <span class="label">${c.label}</span>
+            <div class="levels">
+                <button class="level-btn" data-level="0" onclick="setCompLevel('${c.code}', 0, this)" title="Non vu">➖</button>
+                <button class="level-btn" data-level="1" onclick="setCompLevel('${c.code}', 1, this)" title="Observé">👀</button>
+                <button class="level-btn" data-level="2" onclick="setCompLevel('${c.code}', 2, this)" title="Fait">✓</button>
+                <button class="level-btn" data-level="3" onclick="setCompLevel('${c.code}', 3, this)" title="Maîtrise">⭐</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function setCompLevel(compCode, level, el) {
+    const row = el.closest('.competence-row');
+    row.querySelectorAll('.level-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    data.competences[compCode] = level;
+}
+
+// =============================================
+// RATINGS
+// =============================================
+function setRating(category, value) {
+    data.ratings[category] = value;
+    
+    const stars = document.querySelectorAll(`[data-rating="${category}"] .rating-star`);
+    stars.forEach((star, index) => {
+        star.classList.toggle('active', index < value);
+    });
+}
+
+// =============================================
+// PRÉSENCE
+// =============================================
+function togglePresence(btn) {
+    const day = btn.dataset.day;
+    
+    if (btn.classList.contains('present')) {
+        btn.classList.remove('present');
+        btn.classList.add('absent');
+        btn.textContent = '✗';
+        data.presence[day] = false;
+    } else {
+        btn.classList.remove('absent');
+        btn.classList.add('present');
+        btn.textContent = '✓';
+        data.presence[day] = true;
+    }
+}
+
+// =============================================
+// SIGNATURE
+// =============================================
+function initSignaturePad() {
+    const canvas = document.getElementById('signaturePad');
+    if (!canvas) return;
+    
+    signatureCtx = canvas.getContext('2d');
+    
+    // Ajuster taille
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    
+    signatureCtx.strokeStyle = '#1b3a63';
+    signatureCtx.lineWidth = 2;
+    signatureCtx.lineCap = 'round';
+    
+    // Events
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    canvas.addEventListener('touchstart', handleTouch);
+    canvas.addEventListener('touchmove', handleTouch);
+    canvas.addEventListener('touchend', stopDrawing);
+}
+
+function startDrawing(e) {
+    isDrawing = true;
+    signatureCtx.beginPath();
+    signatureCtx.moveTo(e.offsetX, e.offsetY);
+}
+
+function draw(e) {
+    if (!isDrawing) return;
+    signatureCtx.lineTo(e.offsetX, e.offsetY);
+    signatureCtx.stroke();
+}
+
+function stopDrawing() {
+    isDrawing = false;
+}
+
+function handleTouch(e) {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const canvas = document.getElementById('signaturePad');
+    const rect = canvas.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    
+    if (e.type === 'touchstart') {
+        isDrawing = true;
+        signatureCtx.beginPath();
+        signatureCtx.moveTo(x, y);
+    } else if (e.type === 'touchmove' && isDrawing) {
+        signatureCtx.lineTo(x, y);
+        signatureCtx.stroke();
+    }
+}
+
+function clearSignature() {
+    const canvas = document.getElementById('signaturePad');
+    signatureCtx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function getSignatureData() {
+    const canvas = document.getElementById('signaturePad');
+    return canvas.toDataURL('image/png');
+}
+
+// =============================================
+// RÉCAPITULATIF
+// =============================================
+function renderRecap() {
+    document.getElementById('recapEntreprise').textContent = data.entreprise.nom;
+    document.getElementById('recapTuteur').textContent = `${data.tuteur.nom} (${data.tuteur.fonction || 'Non précisé'})`;
+    
+    document.getElementById('recapMode').textContent = data.evalMode === 'simple' ? 'Activités' : 'Compétences EP2';
+    
+    const nbEval = data.evalMode === 'simple' 
+        ? Object.keys(data.skills).length 
+        : Object.values(data.competences).filter(v => v > 0).length;
+    document.getElementById('recapCompetences').textContent = nbEval;
+    
+    const ratingsHtml = Object.entries(data.ratings).map(([key, value]) => {
+        const labels = {
+            ponctualite: 'Ponctualité',
+            motivation: 'Motivation',
+            ecoute: 'Écoute',
+            securite: 'Sécurité',
+            integration: 'Intégration'
+        };
+        return `
+            <div class="recap-item">
+                <span class="label">${labels[key]}</span>
+                <span class="value">${'★'.repeat(value)}${'☆'.repeat(5-value)}</span>
+            </div>
+        `;
+    }).join('');
+    document.getElementById('recapRatings').innerHTML = ratingsHtml;
+}
+
+// =============================================
+// SOUMISSION
+// =============================================
+function submitEvaluation() {
+    // Vérifier signature
+    const canvas = document.getElementById('signaturePad');
+    const isBlank = !signatureCtx.getImageData(0, 0, canvas.width, canvas.height).data.some(x => x !== 0);
+    
+    if (isBlank) {
+        showToast('Veuillez signer', 'error');
+        return;
+    }
+    
+    data.signature = getSignatureData();
+    data.dateValidation = new Date().toISOString();
+    
+    // Sauvegarder
+    localStorage.setItem('pfmp_tuteur_' + currentCode, JSON.stringify(data));
+    
+    // Afficher succès
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('stepSuccess').classList.add('active');
+    document.getElementById('progressBar').style.display = 'none';
+    
+    showToast('Évaluation validée ! 🎉', 'success');
+}
+
+// =============================================
+// EXPORT
+// =============================================
+function exportData() {
+    const exportData = {
+        version: '3.0',
+        type: 'pfmp_tuteur',
+        exportDate: new Date().toISOString(),
+        codeEleve: currentCode,
+        eleveInfo: eleveData?.eleve || null,
+        ...data
+    };
+    
+    const filename = `PFMP_TUTEUR_${eleveData?.eleve?.nom || 'ELEVE'}_${eleveData?.eleve?.prenom || ''}.json`;
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    showToast('💾 Fichier téléchargé', 'success');
+    
+    // Proposer Pearltrees
+    setTimeout(() => {
+        if (confirm('Ouvrir Pearltrees pour déposer le fichier ?')) {
+            window.open(PEARLTREES_URL, '_blank');
+        }
+    }, 500);
+}
+
+// =============================================
+// UTILS
+// =============================================
+function sho
